@@ -91,7 +91,6 @@ mixin {
     add sourceSets.main, "${modid}.refmap.json"
 }
 
-jarJar.enable()
 dependencies {
     minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}" //21
 
