@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "id": "leaky",
+  "version": "${version}",
+
+  "name": "leaky Mod",
+  "description": "",
+  "authors": [
+    ""
+  ],
+  "contact": {
+    "homepage": "",
+    "sources": ""
+  },
+
+  "license": "ARR",
+  "icon": "assets/modid/icon.png",
+
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.leaky.Leaky"
+    ],
+    "client": [
+      "com.leaky.LeakyClient"
+    ]
+  },
+  "mixins": [
+    "leaky.mixins.json"
+  ],
+  "accessWidener": "leaky.accessWidener",
+  "depends": {
+    "fabricloader": ">=0.11.3",
+    "fabric": "*",
+    "minecraft": "1.19.x",
+    "java": ">=17"
+  },
+  "suggests": {
+    "another-mod": "*"
+  }
+}

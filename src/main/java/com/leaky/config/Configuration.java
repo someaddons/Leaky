@@ -3,7 +3,8 @@ package com.leaky.config;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import net.minecraftforge.fml.loading.FMLPaths;
+import com.leaky.Leaky;
+import net.fabricmc.loader.api.FabricLoader;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -13,10 +14,11 @@ import java.nio.file.Path;
 
 public class Configuration
 {
+
     /**
      * Loaded everywhere, not synced
      */
-    private final com.leaky.config.CommonConfiguration commonConfig = new com.leaky.config.CommonConfiguration();
+    private final CommonConfiguration commonConfig = new CommonConfiguration();
 
     /**
      * Loaded clientside, not synced
@@ -33,13 +35,15 @@ public class Configuration
 
     public void load()
     {
-        final Path configPath = FMLPaths.CONFIGDIR.get().resolve(com.leaky.Leaky.MODID + ".json");
+        final Path configPath = FabricLoader.getInstance().getConfigDir().normalize().resolve(Leaky.MOD_ID + ".json");
         final File config = configPath.toFile();
+
         if (!config.exists())
         {
-            com.leaky.Leaky.LOGGER.warn("Config for leaky not found, recreating default");
+            Leaky.LOGGER.warn("Config not found, recreating default");
             save();
-        } else
+        }
+        else
         {
             try
             {
@@ -47,15 +51,14 @@ public class Configuration
             }
             catch (Exception e)
             {
-                com.leaky.Leaky.LOGGER.error("Could not read config from:" + configPath, e);
-                save();
+                Leaky.LOGGER.error("Could not read config from:" + configPath, e);
             }
         }
     }
 
     public void save()
     {
-        final Path configPath = FMLPaths.CONFIGDIR.get().resolve(com.leaky.Leaky.MODID + ".json");
+        final Path configPath = FabricLoader.getInstance().getConfigDir().normalize().resolve(Leaky.MOD_ID + ".json");
         try
         {
             final BufferedWriter writer = Files.newBufferedWriter(configPath);
@@ -64,9 +67,8 @@ public class Configuration
         }
         catch (IOException e)
         {
-            com.leaky.Leaky.LOGGER.error("Could not write config to:" + configPath, e);
+            Leaky.LOGGER.error("Could not write config to:" + configPath, e);
         }
-        load();
     }
 
     public CommonConfiguration getCommonConfig()
