@@ -7,6 +7,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -68,18 +69,18 @@ public class Leaky implements ModInitializer
 
         reportedLocations.put(entity.blockPosition(), entity.level.getGameTime());
 
-        MutableComponent component = Component.literal("Detected farm leak: " + items.size() + " stacked items at:")
-          .append(Component.literal("[" + entity.blockPosition().toShortString() + "]")
+        MutableComponent component = new TextComponent("Detected farm leak: " + items.size() + " stacked items at:")
+          .append(new TextComponent("[" + entity.blockPosition().toShortString() + "]")
             .withStyle(ChatFormatting.YELLOW).withStyle(style ->
             {
                 return style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,
                   "/tp " + entity.getBlockX() + " " + entity.getBlockY() + " " + entity.getBlockZ()));
             }))
-          .append(Component.literal(" in " + entity.level.dimension().location().toString()));
+          .append(new TextComponent(" in " + entity.level.dimension().location().toString()));
 
         if (items.size() > config.getCommonConfig().autoremovethreshold)
         {
-            component.append(Component.literal(". Removed leaking items automatically"));
+            component.append(new TextComponent(". Removed leaking items automatically"));
             items.forEach(Entity::discard);
         }
 
@@ -98,19 +99,19 @@ public class Leaky implements ModInitializer
 
             if (closest != null)
             {
-                closest.sendSystemMessage(component);
+                closest.sendMessage(component, closest.getUUID());
             }
         }
         else if (config.getCommonConfig().chatnotification.equalsIgnoreCase("EVERYONE"))
         {
             for (final Player player : entity.level.getServer().getPlayerList().getPlayers())
             {
-                player.sendSystemMessage(component);
+                player.sendMessage(component, player.getUUID());
             }
         }
         else
         {
-            component.append(Component.literal(" Chatnotification mode:NONE(" + config.getCommonConfig().chatnotification + ")"));
+            component.append(new TextComponent(" Chatnotification mode:NONE(" + config.getCommonConfig().chatnotification + ")"));
         }
 
         Leaky.LOGGER.warn(component.getString());
