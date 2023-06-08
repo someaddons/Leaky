@@ -68,7 +68,6 @@ public class Leaky
             component.append(Component.literal(". Removed leaking items automatically"));
             items.forEach(Entity::discard);
         }
-        // TODO: Make blockpos clickable for teleport command(op/creative)
 
         if (config.getCommonConfig().chatnotification.equalsIgnoreCase("PLAYER"))
         {
