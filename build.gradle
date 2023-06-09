@@ -14,7 +14,7 @@ var ENV = System.getenv()
 if (ENV.MCMC_BUILD_NUMBER) {
     version = "${mod_version}.${ENV.MCMC_BUILD_NUMBER}"
 } else {
-    version = project.mod_version
+    version = project.minecraft_version + "-" + project.mod_version
 }
 
 group = project.maven_group
@@ -78,7 +78,7 @@ java {
     if (JavaVersion.current() < javaVersion) {
         toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
     }
-    archivesBaseName = project.archives_base_name + "-fabric"
+    archivesBaseName =  project.archives_base_name + "-fabric"
     withSourcesJar()
 }
 
