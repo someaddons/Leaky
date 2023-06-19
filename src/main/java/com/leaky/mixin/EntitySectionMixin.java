@@ -31,7 +31,7 @@ public class EntitySectionMixin<T extends EntityAccess>
 
             if (collection.size() > Leaky.config.getCommonConfig().reportThreshold)
             {
-                if (((ItemEntity) entity).level.isClientSide && Leaky.config.getCommonConfig().highlightitems)
+                if (((ItemEntity) entity).level().isClientSide && Leaky.config.getCommonConfig().highlightitems)
                 {
                     for (final ItemEntity item : collection)
                     {
@@ -39,7 +39,7 @@ public class EntitySectionMixin<T extends EntityAccess>
                     }
                 }
 
-                if (!((ItemEntity) entity).level.isClientSide)
+                if (!((ItemEntity) entity).level().isClientSide)
                 {
                     Leaky.detectedItemLeak(((ItemEntity) entity), new ArrayList<>(collection));
                 }
