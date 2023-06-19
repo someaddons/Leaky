@@ -60,13 +60,13 @@ public class Leaky implements ModInitializer
     {
         for (final Map.Entry<BlockPos, Long> entry : reportedLocations.entrySet())
         {
-            if (entry.getKey().distSqr(entity.blockPosition()) < 10 * 10 && (entity.level.getGameTime() - entry.getValue()) < config.getCommonConfig().reportInterval * 20)
+            if (entry.getKey().distSqr(entity.blockPosition()) < 10 * 10 && (entity.level().getGameTime() - entry.getValue()) < config.getCommonConfig().reportInterval * 20)
             {
                 return;
             }
         }
 
-        reportedLocations.put(entity.blockPosition(), entity.level.getGameTime());
+        reportedLocations.put(entity.blockPosition(), entity.level().getGameTime());
 
         MutableComponent component = Component.literal("Detected farm leak: " + items.size() + " stacked items at:")
           .append(Component.literal("[" + entity.blockPosition().toShortString() + "]")
@@ -75,7 +75,7 @@ public class Leaky implements ModInitializer
                 return style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,
                   "/tp " + entity.getBlockX() + " " + entity.getBlockY() + " " + entity.getBlockZ()));
             }))
-          .append(Component.literal(" in " + entity.level.dimension().location().toString()));
+          .append(Component.literal(" in " + entity.level().dimension().location().toString()));
 
         if (items.size() > config.getCommonConfig().autoremovethreshold)
         {
@@ -87,7 +87,7 @@ public class Leaky implements ModInitializer
         {
             double dist = Double.MAX_VALUE;
             Player closest = null;
-            for (final Player player : entity.level.players())
+            for (final Player player : entity.level().players())
             {
                 if (player.position().distanceTo(entity.position()) < dist)
                 {
@@ -103,7 +103,7 @@ public class Leaky implements ModInitializer
         }
         else if (config.getCommonConfig().chatnotification.equalsIgnoreCase("EVERYONE"))
         {
-            for (final Player player : entity.level.getServer().getPlayerList().getPlayers())
+            for (final Player player : entity.level().getServer().getPlayerList().getPlayers())
             {
                 player.sendSystemMessage(component);
             }

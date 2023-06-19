@@ -42,11 +42,11 @@ public abstract class ItemEntityMixin extends Entity
             return;
         }
 
-        List<ItemEntity> items = this.level.getEntitiesOfClass(ItemEntity.class, this.getBoundingBox().inflate(0.5D, 0.0D, 0.5D));
+        List<ItemEntity> items = this.level().getEntitiesOfClass(ItemEntity.class, this.getBoundingBox().inflate(0.5D, 0.0D, 0.5D));
 
         if (items.size() > Leaky.getConfig().getCommonConfig().reportThreshold)
         {
-            if (getLevel().isClientSide && Leaky.getConfig().getCommonConfig().highlightitems)
+            if (level().isClientSide && Leaky.getConfig().getCommonConfig().highlightitems)
             {
                 for (final ItemEntity item : items)
                 {
@@ -56,7 +56,7 @@ public abstract class ItemEntityMixin extends Entity
 
             reported = true;
 
-            if (!level.isClientSide)
+            if (!level().isClientSide)
             {
                 Leaky.detectedItemLeak(self, items);
             }
