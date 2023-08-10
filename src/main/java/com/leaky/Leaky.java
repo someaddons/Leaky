@@ -1,6 +1,7 @@
 package com.leaky;
 
-import com.leaky.config.Configuration;
+import com.cupboard.config.CupboardConfig;
+import com.leaky.config.CommonConfiguration;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.ClickEvent;
@@ -24,10 +25,10 @@ import java.util.Random;
 @Mod(com.leaky.Leaky.MODID)
 public class Leaky
 {
-    public static final String MODID = "leaky";
-    public static final Logger LOGGER = LogManager.getLogger();
-    public static Configuration config = new Configuration();
-    public static Random rand = new Random();
+    public static final String                              MODID  = "leaky";
+    public static final Logger                              LOGGER = LogManager.getLogger();
+    public static       CupboardConfig<CommonConfiguration> config = new CupboardConfig<>(MODID, new CommonConfiguration());
+    public static       Random                              rand   = new Random();
 
     private static Map<BlockPos, Long> reportedLocations = new HashMap<>();
 
@@ -55,13 +56,13 @@ public class Leaky
         reportedLocations.put(entity.blockPosition(), entity.level().getGameTime());
 
         MutableComponent component = Component.literal("Detected farm leak: " + items.size() + " stacked items at:")
-                .append(Component.literal("[" + entity.blockPosition().toShortString() + "]")
-                        .withStyle(ChatFormatting.YELLOW).withStyle(style ->
-                        {
-                            return style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,
-                                    "/tp " + entity.getBlockX() + " " + entity.getBlockY() + " " + entity.getBlockZ()));
-                        }))
-                .append(Component.literal(" in " + entity.level().dimension().location().toString()));
+          .append(Component.literal("[" + entity.blockPosition().toShortString() + "]")
+            .withStyle(ChatFormatting.YELLOW).withStyle(style ->
+            {
+                return style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,
+                  "/tp " + entity.getBlockX() + " " + entity.getBlockY() + " " + entity.getBlockZ()));
+            }))
+          .append(Component.literal(" in " + entity.level().dimension().location().toString()));
 
         if (items.size() > config.getCommonConfig().autoremovethreshold)
         {
@@ -86,13 +87,15 @@ public class Leaky
             {
                 closest.sendSystemMessage(component);
             }
-        } else if (config.getCommonConfig().chatnotification.equalsIgnoreCase("EVERYONE"))
+        }
+        else if (config.getCommonConfig().chatnotification.equalsIgnoreCase("EVERYONE"))
         {
             for (final Player player : entity.level().getServer().getPlayerList().getPlayers())
             {
                 player.sendSystemMessage(component);
             }
-        } else
+        }
+        else
         {
             component.append(Component.literal(" Chatnotification mode:NONE(" + config.getCommonConfig().chatnotification + ")"));
         }
