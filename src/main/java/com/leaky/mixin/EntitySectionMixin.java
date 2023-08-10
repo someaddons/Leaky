@@ -25,13 +25,13 @@ public class EntitySectionMixin<T extends EntityAccess>
     @Inject(method = "add", at = @At("HEAD"))
     private void leaky$addEntity(final T entity, final CallbackInfo ci)
     {
-        if (entity instanceof ItemEntity && storage.size() > Leaky.getConfig().getCommonConfig().reportThreshold)
+        if (entity instanceof ItemEntity && storage.size() > Leaky.config.getCommonConfig().reportThreshold)
         {
             Collection<ItemEntity> collection = this.storage.find(ItemEntity.class);
 
-            if (collection.size() > Leaky.getConfig().getCommonConfig().reportThreshold)
+            if (collection.size() > Leaky.config.getCommonConfig().reportThreshold)
             {
-                if (((ItemEntity) entity).level().isClientSide && Leaky.getConfig().getCommonConfig().highlightitems)
+                if (((ItemEntity) entity).level().isClientSide && Leaky.config.getCommonConfig().highlightitems)
                 {
                     for (final ItemEntity item : collection)
                     {

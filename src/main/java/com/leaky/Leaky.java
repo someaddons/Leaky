@@ -1,6 +1,7 @@
 package com.leaky;
 
-import com.leaky.config.Configuration;
+import com.cupboard.config.CupboardConfig;
+import com.leaky.config.CommonConfiguration;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -22,27 +23,16 @@ import java.util.Random;
 // The value here should match an entry in the META-INF/mods.toml file
 public class Leaky implements ModInitializer
 {
-    public static final String        MOD_ID = "leaky";
-    public static final Logger        LOGGER = LogManager.getLogger();
-    private static      Configuration config = null;
-    public static       Random        rand   = new Random();
+    public static final String                              MOD_ID = "leaky";
+    public static final Logger                              LOGGER = LogManager.getLogger();
+    public static      CupboardConfig<CommonConfiguration> config = new CupboardConfig<>(MOD_ID, new CommonConfiguration());
+    public static       Random                              rand   = new Random();
 
     private static Map<BlockPos, Long> reportedLocations = new HashMap<>();
 
     public Leaky()
     {
 
-    }
-
-    public static Configuration getConfig()
-    {
-        if (config == null)
-        {
-            config = new Configuration();
-            config.load();
-        }
-
-        return config;
     }
 
     public static ResourceLocation id(String name)

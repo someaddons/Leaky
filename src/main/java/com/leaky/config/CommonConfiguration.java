@@ -1,14 +1,15 @@
 package com.leaky.config;
 
+import com.cupboard.config.ICommonConfig;
 import com.google.gson.JsonObject;
 
-public class CommonConfiguration
+public class CommonConfiguration implements ICommonConfig
 {
-    public int reportInterval = 60 * 3;
-    public String chatnotification = "PLAYER";
-    public boolean highlightitems = true;
-    public int reportThreshold = 80;
-    public int autoremovethreshold = 120;
+    public int     reportInterval      = 60 * 3;
+    public String  chatnotification    = "PLAYER";
+    public boolean highlightitems      = true;
+    public int     reportThreshold     = 80;
+    public int     autoremovethreshold = 120;
 
     public CommonConfiguration()
     {
@@ -49,12 +50,6 @@ public class CommonConfiguration
 
     public void deserialize(JsonObject data)
     {
-        if (data == null)
-        {
-            com.leaky.Leaky.LOGGER.error("Config file was empty!");
-            return;
-        }
-
         reportInterval = data.get("reportInterval").getAsJsonObject().get("reportInterval").getAsInt();
         chatnotification = data.get("chatnotification").getAsJsonObject().get("chatnotification").getAsString();
         highlightitems = data.get("highlightitems").getAsJsonObject().get("highlightitems").getAsBoolean();
