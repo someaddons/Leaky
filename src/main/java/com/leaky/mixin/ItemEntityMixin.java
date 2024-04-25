@@ -1,5 +1,6 @@
 package com.leaky.mixin;
 
+import com.leaky.INearbyItemAwareEntity;
 import com.leaky.Leaky;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -58,7 +59,18 @@ public abstract class ItemEntityMixin extends Entity
 
             if (!level().isClientSide)
             {
-                Leaky.detectedItemLeak(self, items);
+                Leaky.detectedItemLeak(self, items, 2);
+            }
+        }
+        else
+        {
+            final int size = items.size();
+            for(final ItemEntity item: items)
+            {
+                if (item instanceof INearbyItemAwareEntity nearbyItemAware)
+                {
+                    nearbyItemAware.setNearbyItems(size);
+                }
             }
         }
     }

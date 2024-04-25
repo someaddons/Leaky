@@ -41,7 +41,7 @@ public class EntitySectionMixin<T extends EntityAccess>
 
                 if (!((ItemEntity) entity).level().isClientSide)
                 {
-                    Leaky.detectedItemLeak(((ItemEntity) entity), new ArrayList<>(collection));
+                    Leaky.detectedItemLeak(((ItemEntity) entity), new ArrayList<>(collection), 16);
                 }
             }
         }
