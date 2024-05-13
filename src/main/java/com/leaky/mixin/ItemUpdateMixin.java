@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(ItemEntity.class)
+@Mixin(value = ItemEntity.class, priority = 999)
 public abstract class ItemUpdateMixin extends Entity implements INearbyItemAwareEntity
 {
     @Shadow
@@ -44,7 +44,7 @@ public abstract class ItemUpdateMixin extends Entity implements INearbyItemAware
     @Unique
     private int delay = 0;
 
-    @Redirect(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;noCollision(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/phys/AABB;)Z"))
+    @Redirect(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;noCollision(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/phys/AABB;)Z"), require = 0)
     private boolean checkCollisions(final Level instance, final Entity entity, final AABB aabb)
     {
         if (tickCount < 100 || (tickCount + getId()) % updateRate == 0)
