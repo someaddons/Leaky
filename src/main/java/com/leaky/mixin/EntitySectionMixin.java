@@ -31,11 +31,14 @@ public class EntitySectionMixin<T extends EntityAccess>
 
             if (collection.size() > Leaky.config.getCommonConfig().reportThreshold)
             {
-                if (((ItemEntity) entity).level().isClientSide && Leaky.config.getCommonConfig().highlightitems)
+                if (collection.size() > Leaky.config.getCommonConfig().reportThreshold * 2)
                 {
-                    for (final ItemEntity item : collection)
+                    if (((ItemEntity) entity).level().isClientSide && Leaky.config.getCommonConfig().highlightitems)
                     {
-                        item.setSharedFlag(6, true);
+                        for (final ItemEntity item : collection)
+                        {
+                            item.setSharedFlag(6, true);
+                        }
                     }
                 }
 

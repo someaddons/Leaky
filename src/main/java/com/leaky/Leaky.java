@@ -35,11 +35,6 @@ public class Leaky implements ModInitializer
 
     }
 
-    public static ResourceLocation id(String name)
-    {
-        return new ResourceLocation(MOD_ID, name);
-    }
-
     @Override
     public void onInitialize()
     {
