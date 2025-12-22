@@ -8,8 +8,8 @@ public class CommonConfiguration implements ICommonConfig
     public int     reportInterval      = 60 * 3;
     public String  chatnotification    = "PLAYER";
     public boolean highlightitems      = true;
-    public int     reportThreshold     = 100;
-    public int     autoremovethreshold = 160;
+    public int     reportThreshold     = 200;
+    public int     autoremovethreshold = 400;
     public boolean improveItemPerformance = true;
 
     public CommonConfiguration()
@@ -32,22 +32,22 @@ public class CommonConfiguration implements ICommonConfig
         root.add("highlightitems", entry5);
 
         final JsonObject entry6 = new JsonObject();
-        entry6.addProperty("desc:", "Set the min amount of stacked items being reported, default: 100");
+        entry6.addProperty("desc:", "Set the min amount of stacked items being reported, default: 200");
         entry6.addProperty("reportThreshold", reportThreshold);
         root.add("reportThreshold", entry6);
 
         final JsonObject entry7 = new JsonObject();
-        entry7.addProperty("desc:", "Set the amount of stacked items being automatically removed, default: 160");
+        entry7.addProperty("desc:", "Set the amount of stacked items being automatically removed, stacks of items only get removed after waiting the reportInterval after first detection. If the stacks exceed the autoremoval threshold by x3 they are instantly removed. default: 400");
         entry7.addProperty("autoremovethreshold", autoremovethreshold);
         root.add("autoremovethreshold", entry7);
 
         final JsonObject entry3 = new JsonObject();
-        entry3.addProperty("desc:", "Set the amount of seconds between repeated notifications: default: 180");
+        entry3.addProperty("desc:", "Set the amount of seconds between repeated notifications, : default: 180");
         entry3.addProperty("reportInterval", reportInterval);
         root.add("reportInterval", entry3);
 
         final JsonObject entry4 = new JsonObject();
-        entry4.addProperty("desc:", "Set the chat notification type, one of these: PLAYER(closest player), EVERYONE(all players), NONE. default: PLAYER");
+        entry4.addProperty("desc:", "Set the chat notification type, one of these: PLAYER(closest player), EVERYONE(all players), NONE, OP(operator). default: PLAYER");
         entry4.addProperty("chatnotification", chatnotification);
         root.add("chatnotification", entry4);
 
