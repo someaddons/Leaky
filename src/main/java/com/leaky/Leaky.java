@@ -2,6 +2,7 @@ package com.leaky;
 
 import com.cupboard.config.CupboardConfig;
 import com.leaky.config.CommonConfiguration;
+import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.ClickEvent;
@@ -16,7 +17,6 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -25,12 +25,14 @@ import java.util.Random;
 @Mod(com.leaky.Leaky.MODID)
 public class Leaky
 {
-    public static final String                              MODID  = "leaky";
-    public static final Logger                              LOGGER = LogManager.getLogger();
-    public static       CupboardConfig<CommonConfiguration> config = new CupboardConfig<>(MODID, new CommonConfiguration());
-    public static       Random                              rand   = new Random();
+    public static final String                              MODID              = "leaky";
+    public static final Logger                              LOGGER             = LogManager.getLogger();
+    public static       CupboardConfig<CommonConfiguration> config             = new CupboardConfig<>(MODID, new CommonConfiguration());
+    public static final int                                 CONTAIN_RADIUS_SQR = 4 * 4;
+    public static final int                                 REPORT_RADIUS_SQR  = 10 * 10;
+    public static       Random                              rand               = new Random();
 
-    private static Map<BlockPos, Long> reportedLocations = new HashMap<>();
+    private static Object2LongOpenHashMap<BlockPos> reportedLocations = new Object2LongOpenHashMap<>();
 
     public Leaky()
     {
@@ -54,7 +56,7 @@ public class Leaky
             }
         }
 
-        if (range > 2)
+        if (range > 2 && size < config.getCommonConfig().autoremovethreshold * 3)
         {
             size /= 2;
         }
@@ -64,28 +66,41 @@ public class Leaky
             return;
         }
 
-        for (final Map.Entry<BlockPos, Long> entry : reportedLocations.entrySet())
+        boolean contained = false;
+
+        // Large leaks bypass the cooldown, to allow deletion before server crashes
+        if (size < config.getCommonConfig().autoremovethreshold * 3)
         {
-            if (entry.getKey().distSqr(entity.blockPosition()) < 10 * 10 && (entity.level().getGameTime() - entry.getValue()) < config.getCommonConfig().reportInterval * 20)
+            long now = entity.level().getGameTime();
+            for (final Map.Entry<BlockPos, Long> entry : reportedLocations.entrySet())
             {
-                return;
+                final double dist = entry.getKey().distSqr(entity.blockPosition());
+
+                if (dist < CONTAIN_RADIUS_SQR)
+                {
+                    contained = true;
+                }
+
+                if (dist < REPORT_RADIUS_SQR && (now - entry.getValue()) < config.getCommonConfig().reportInterval * 20)
+                {
+                    return;
+                }
             }
         }
 
         reportedLocations.put(entity.blockPosition(), entity.level().getGameTime());
 
-        MutableComponent component = Component.literal("Detected: " + items.size() + " stacked items at:")
-          .append(Component.literal("[" + entity.blockPosition().toShortString() + "]")
-            .withStyle(ChatFormatting.YELLOW).withStyle(style ->
-            {
-                return style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,
-                  "/tp " + entity.getBlockX() + " " + entity.getBlockY() + " " + entity.getBlockZ()));
-            }))
-          .append(Component.literal(" in " + entity.level().dimension().location().toString()));
+        MutableComponent component = Component.translatable("leaky.detect", items.size(), entity.level().dimension().location())
+            .append(Component.literal("[" + entity.blockPosition().toShortString() + "]")
+                .withStyle(ChatFormatting.YELLOW).withStyle(style ->
+                {
+                    return style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,
+                        "/tp " + entity.getBlockX() + " " + entity.getBlockY() + " " + entity.getBlockZ()));
+                }));
 
-        if (size > config.getCommonConfig().autoremovethreshold && items.get(0).getAge() > 20 * 30)
+        if (size > config.getCommonConfig().autoremovethreshold && (contained || size >= config.getCommonConfig().autoremovethreshold * 3))
         {
-            component.append(Component.literal(". Cleaned items automatically to prevent lag"));
+            component.append(Component.translatable("leaky.removedItems"));
             items.forEach(Entity::discard);
         }
 
@@ -112,6 +127,24 @@ public class Leaky
             for (final Player player : entity.level().getServer().getPlayerList().getPlayers())
             {
                 player.sendSystemMessage(component);
+            }
+        }
+        else if (config.getCommonConfig().chatnotification.equalsIgnoreCase("OP"))
+        {
+            double dist = Double.MAX_VALUE;
+            Player closest = null;
+            for (final Player player : entity.level().players())
+            {
+                if (player.level().getServer().getPlayerList().isOp(player.getGameProfile()) && player.position().distanceTo(entity.position()) < dist)
+                {
+                    dist = player.position().distanceTo(entity.position());
+                    closest = player;
+                }
+            }
+
+            if (closest != null)
+            {
+                closest.sendSystemMessage(component);
             }
         }
         else
