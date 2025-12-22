@@ -38,12 +38,12 @@ public abstract class ItemEntityMixin extends Entity
     @Inject(method = "tick", at = @At(value = "TAIL"))
     private void checkSize(CallbackInfo ci)
     {
-        if (reported || age < 20 * 60 || tickCount % 40 != 0 || Leaky.rand.nextInt(10) != 0)
+        if (reported || age < 20 * 60 || tickCount % 400 != 0)
         {
             return;
         }
 
-        List<ItemEntity> items = this.level().getEntitiesOfClass(ItemEntity.class, this.getBoundingBox().inflate(0.5D, 0.0D, 0.5D));
+        List<ItemEntity> items = this.level().getEntitiesOfClass(ItemEntity.class, this.getBoundingBox().inflate(2.5D, 1.0D, 2.5D));
 
         if (items.size() > Leaky.config.getCommonConfig().reportThreshold)
         {
