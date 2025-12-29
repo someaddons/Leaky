@@ -89,13 +89,13 @@ public class Leaky implements ModInitializer
 
         reportedLocations.put(entity.blockPosition(), entity.level().getGameTime());
 
-        MutableComponent component = Component.translatable("leaky.detect", items.size(), entity.level().dimension().location())
-          .append(Component.literal("[" + entity.blockPosition().toShortString() + "]")
-            .withStyle(ChatFormatting.YELLOW).withStyle(style ->
-            {
-                return style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,
-                  "/tp " + entity.getBlockX() + " " + entity.getBlockY() + " " + entity.getBlockZ()));
-            }));
+        MutableComponent component = Component.translatable("leaky.detect", items.size(), Component.translatable(entity.level().dimension().location().toLanguageKey()))
+            .append(Component.literal("[" + entity.blockPosition().toShortString() + "]")
+                .withStyle(ChatFormatting.YELLOW).withStyle(style ->
+                {
+                    return style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,
+                        "/tp " + entity.getBlockX() + " " + entity.getBlockY() + " " + entity.getBlockZ()));
+                }));
 
         if (size > config.getCommonConfig().autoremovethreshold && (contained || size >= config.getCommonConfig().autoremovethreshold * 3))
         {
