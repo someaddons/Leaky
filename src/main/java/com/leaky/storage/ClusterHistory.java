@@ -8,6 +8,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
@@ -44,14 +45,13 @@ public class ClusterHistory
         this.dimension = dimension;
     }
 
-    public void restore(final CommandContext<CommandSourceStack> context)
+    public boolean restore(final CommandContext<CommandSourceStack> context, final ServerLevel level)
     {
-        final Level level = context.getSource().getLevel();
         if (!level.dimension().equals(dimension))
         {
             Leaky.LOGGER.warn("Cannot restore cluster: " + id + " as it is trying to restore in dimension: " + level.dimension().location() + " but was saved for dimension: "
                 + dimension.location());
-            return;
+            return false;
         }
 
         for (final ItemStack stack : stacks)
@@ -62,7 +62,8 @@ public class ClusterHistory
             level.addFreshEntity(entity);
         }
 
-        context.getSource().sendSystemMessage(Component.literal("Restored " + stacks.size() + " items at: ").append(ComponentUtil.createLocationComponent(position)));
+        context.getSource().sendSystemMessage(Component.literal("Restored " + stacks.size() + " items at: ").append(ComponentUtil.createLocationComponent(position, level.dimension())));
+        return true;
     }
 
     public Component report(final CommandSourceStack source)
@@ -75,6 +76,6 @@ public class ClusterHistory
             .append(Component.literal("Deleted " + stacks.size() + " items").withStyle(ChatFormatting.WHITE))
             .append(Component.literal(" | " + formatAge(ageSeconds) + " old").withStyle(ChatFormatting.GRAY))
             .append("\n")
-            .append(createLocationComponent(position)).append(" ").append(createRestoreComponent(id, dimension));
+            .append(createLocationComponent(position, dimension)).append(" ").append(createRestoreComponent(id, dimension));
     }
 }

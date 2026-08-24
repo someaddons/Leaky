@@ -224,6 +224,7 @@ public class ItemClusterManager
             {
                 iterator.remove();
                 cluster.clearItems();
+                clusterSpatialStorage.get(calculateCellIndex(cluster.position)).remove(cluster);
                 return true;
             }
         }

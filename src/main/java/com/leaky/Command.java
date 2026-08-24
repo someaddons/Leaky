@@ -90,8 +90,10 @@ public class Command
                                 final ClusterHistory history = clusterManager.getHistory(clusterID);
                                 if (history != null)
                                 {
-                                    history.restore(context);
-                                    clusterManager.removeHistory(clusterID);
+                                    if (history.restore(context, level))
+                                    {
+                                        clusterManager.removeHistory(clusterID);
+                                    }
                                 }
                             }
                             return 1;

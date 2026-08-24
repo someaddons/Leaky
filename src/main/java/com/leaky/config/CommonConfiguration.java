@@ -60,7 +60,7 @@ public class CommonConfiguration implements ICommonConfig
 
         subEntryRemoval.addProperty("desc2:",
             "Set the delay after which a cluster that reached the autoremovethreshold can be deleted. Default: 30 seconds");
-        subEntryRemoval.addProperty("autoRemoveDelay", autoRemoveDelay);
+        subEntryRemoval.addProperty("autoRemoveDelay", autoRemoveDelay / 20);
 
         subEntryRemoval.addProperty("desc3:",
             "Set the minimum cluster size at which an item cluster is immediately deleted. This is intended as a very high threshold to help prevent server crashes caused by extreme item entity concentrations. default: 1500");
@@ -90,7 +90,7 @@ public class CommonConfiguration implements ICommonConfig
         reportThreshold = data.get("itemsettings").getAsJsonObject().get("reportThreshold").getAsInt();
         autoremovethreshold = data.get("itemsettings").getAsJsonObject().get("autoremoval").getAsJsonObject().get("autoremovethreshold").getAsInt();
         autoremovenodelaythreshold = data.get("itemsettings").getAsJsonObject().get("autoremoval").getAsJsonObject().get("autoremovenodelaythreshold").getAsInt();
-        autoRemoveDelay = data.get("itemsettings").getAsJsonObject().get("autoremoval").getAsJsonObject().get("autoRemoveDelay").getAsInt();
+        autoRemoveDelay = data.get("itemsettings").getAsJsonObject().get("autoremoval").getAsJsonObject().get("autoRemoveDelay").getAsInt() * 20;
         detectionThreshold = data.get("itemsettings").getAsJsonObject().get("detectionThreshold").getAsInt();
         entitySectionLogThreshold = data.get("entitySection").getAsJsonObject().get("entitySectionLogThreshold").getAsInt();
         wastePercent = data.get("itemsettings").getAsJsonObject().get("wasteFactor").getAsDouble() / 100.0;

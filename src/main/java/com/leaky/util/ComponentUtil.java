@@ -14,12 +14,12 @@ public class ComponentUtil
      *
      * @return Component with clickable teleport position
      */
-    public static Component createLocationComponent(final BlockPos position)
+    public static Component createLocationComponent(final BlockPos position, final ResourceKey<Level> dimension)
     {
         return Component.literal("[" + position.toShortString() + "]")
             .withStyle(style -> style.withColor(ChatFormatting.AQUA)
                 .withUnderlined(true)
-                .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tp " + position.getX() + " " + position.getY() + " " + position.getZ())));
+                .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/execute in "+dimension.location()+" run tp " + position.getX() + " " + position.getY() + " " + position.getZ())));
     }
 
     /**
@@ -27,10 +27,10 @@ public class ComponentUtil
      *
      * @return
      */
-    public static Component createInspectComponent(final int clusterID)
+    public static Component createInspectComponent(final int clusterID, final ResourceKey<Level> dimension)
     {
         return Component.literal("[Inspect]")
-            .withStyle(style -> style.withColor(ChatFormatting.AQUA).withUnderlined(true).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/leaky inspect " + clusterID)));
+            .withStyle(style -> style.withColor(ChatFormatting.AQUA).withUnderlined(true).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/execute in "+dimension.location()+" run leaky inspect " + clusterID)));
     }
 
     /**

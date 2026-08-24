@@ -59,7 +59,6 @@ public class EntitySectionMixin<T extends EntityAccess>
             }
         }
 
-        // TODO: Configure logging interval/disable?
         if (!(entity instanceof ItemEntity) && storageSize > CommonConfiguration.config.getCommonConfig().entitySectionLogThreshold && entity instanceof Entity realEntity
             && realEntity.level() != null && (realEntity.level().getGameTime() - lastReportTime) > 20 * 60 * 5)
         {

@@ -37,9 +37,7 @@ public class ItemCluster
     /**
      * Current detection state of this cluster
      */
-    // TODO: REstore default
-    //private ClusterState clusterState = ClusterState.CREATED;
-    private ClusterState clusterState = ClusterState.SUSPICIOUS;
+    private ClusterState clusterState = ClusterState.CREATED;
 
     public ItemCluster(final Level level, final BlockPos position, final long creationTime)
     {
@@ -96,7 +94,7 @@ public class ItemCluster
                 checkState();
             }
             // Item despawn waste leak, most items being produced keep despawning
-            else if (age > 20 * 60 * 6 && count() >= 100 && arrivals > 300 && despawns > 300 && (despawns >= arrivals * CommonConfiguration.config.getCommonConfig().wastePercent))
+            else if (age > 20 * 60 * 8 && count() >= 100 && arrivals > 300 && despawns > 300 && (despawns >= arrivals * CommonConfiguration.config.getCommonConfig().wastePercent))
             {
                 sendNotification(createWasteLeakNotification(), ClusterState.LEAK);
                 clusterState = ClusterState.LEAK;
@@ -204,7 +202,7 @@ public class ItemCluster
             if (level.getServer().getPlayerList().isOp(player.getGameProfile()))
             {
                 var opMessage = message.copy();
-                opMessage.append(createInspectComponent(id));
+                opMessage.append(createInspectComponent(id, level.dimension()));
                 if (clusterState == ClusterState.PENDING_DELETION)
                 {
                     opMessage.append(createRestoreComponent(id, level.dimension()));
@@ -298,7 +296,7 @@ public class ItemCluster
             .append("\n")
             .append(Component.literal("Arrivals: " + arrivals + " | Age: " + formatAge((level.getGameTime() - creationTime) / 20)).withStyle(ChatFormatting.GRAY))
             .append("\n")
-            .append(createLocationComponent(position));
+            .append(createLocationComponent(position, level.dimension()));
     }
 
     private Component createWasteLeakNotification()
@@ -312,7 +310,7 @@ public class ItemCluster
             .append("\n")
             .append(Component.literal(count() + " items remain | Age: " + formatAge((level.getGameTime() - creationTime) / 20)).withStyle(ChatFormatting.GRAY))
             .append("\n")
-            .append(createLocationComponent(position));
+            .append(createLocationComponent(position, level.dimension()));
     }
 
     private Component createCriticalNotification()
@@ -324,7 +322,7 @@ public class ItemCluster
             .append("\n")
             .append(Component.literal("Leaky will clean this cluster if it remains unattended.").withStyle(ChatFormatting.GRAY))
             .append("\n")
-            .append(createLocationComponent(position));
+            .append(createLocationComponent(position, level.dimension()));
     }
 
     public Component createDeletionNotification()
@@ -336,7 +334,7 @@ public class ItemCluster
             .append("\n")
             .append(Component.literal("Leaky removed those items successfully").withStyle(ChatFormatting.GRAY))
             .append("\n")
-            .append(createLocationComponent(position));
+            .append(createLocationComponent(position, level.dimension()));
     }
 
     /**
@@ -356,7 +354,7 @@ public class ItemCluster
             .append(Component.literal(count + " items").withStyle(ChatFormatting.WHITE))
             .append(Component.literal(" | " + formatAge(ageSeconds) + " old").withStyle(ChatFormatting.GRAY))
             .append("\n")
-            .append(createInspectComponent(id)).append(" ").append(createLocationComponent(position));
+            .append(createInspectComponent(id, level.dimension())).append(" ").append(createLocationComponent(position, level.dimension()));
     }
 
     /**
@@ -376,7 +374,7 @@ public class ItemCluster
             .append(Component.literal(count + " items").withStyle(ChatFormatting.WHITE))
             .append(Component.literal(" | " + formatAge(ageSeconds) + " old").withStyle(ChatFormatting.GRAY))
             .append("\n")
-            .append(createInspectComponent(id)).append(" ").append(createLocationComponent(position))
+            .append(createInspectComponent(id, level.dimension())).append(" ").append(createLocationComponent(position, level.dimension()))
             .append("\n")
             .append(Component.literal("Arrivals: ").withStyle(ChatFormatting.GRAY))
             .append(Component.literal(Integer.toString(arrivals)).withStyle(ChatFormatting.AQUA))
