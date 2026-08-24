@@ -1,4 +1,5 @@
 {
   "leaky.removedItems": ". Cleaned items automatically to prevent lag",
-  "leaky.detect": "Detected: %d stacked items in %s at: "
+  "leaky.detect": "Detected: %d stacked items in %s at: ",
+  "leaky.status": "Listing all actively tracked clusters of item entities"
 }

@@ -1,7 +1,7 @@
 package com.leaky.mixin;
 
-import com.leaky.INearbyItemAwareEntity;
-import com.leaky.Leaky;
+import com.leaky.config.CommonConfiguration;
+import com.leaky.storage.IClusterItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = ItemEntity.class, priority = 999)
-public abstract class ItemUpdateMixin extends Entity implements INearbyItemAwareEntity
+public abstract class ItemUpdateMixin extends Entity implements IClusterItem
 {
     @Shadow
     private int age;
@@ -28,9 +28,6 @@ public abstract class ItemUpdateMixin extends Entity implements INearbyItemAware
 
     @Unique
     private int updateRate = 1;
-
-    @Unique
-    private int nearbyItems = 0;
 
     @Unique
     private boolean waterState = false;
@@ -112,7 +109,7 @@ public abstract class ItemUpdateMixin extends Entity implements INearbyItemAware
             return;
         }
 
-        if (!Leaky.config.getCommonConfig().improveItemPerformance)
+        if (!CommonConfiguration.config.getCommonConfig().improveItemPerformance)
         {
             return;
         }
@@ -128,10 +125,10 @@ public abstract class ItemUpdateMixin extends Entity implements INearbyItemAware
         }
 
         // If many items are stacked slow down ticking and accelerate decay
-        if (nearbyItems > 0)
+        if (getCluster() != null && getCluster().count() > 0)
         {
-            updateRate += nearbyItems / 10;
-            age += (nearbyItems / 15);
+            updateRate += getCluster().count() / 10;
+            age += (getCluster().count() / 15);
         }
 
         // On movement reset
@@ -141,17 +138,5 @@ public abstract class ItemUpdateMixin extends Entity implements INearbyItemAware
             delay = 300;
         }
         previousPos = blockPosition();
-    }
-
-    @Override
-    public int getNearbyItems()
-    {
-        return nearbyItems;
-    }
-
-    @Override
-    public void setNearbyItems(final int items)
-    {
-        nearbyItems = Math.max(nearbyItems, items);
     }
 }
