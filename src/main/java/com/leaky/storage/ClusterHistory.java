@@ -69,7 +69,7 @@ public class ClusterHistory
     public Component report(final CommandSourceStack source)
     {
         final long ageSeconds = (source.getLevel().getGameTime() - time) / 20;
-        return Component.literal("Deletion History Item Cluster #" + id + " — ")
+        return Component.literal("Deletion History Item Cluster #" + id + " - ")
             .withStyle(ChatFormatting.GRAY)
             .append(Component.literal(state.toString()).withStyle(getStateColor(state)))
             .append("\n")

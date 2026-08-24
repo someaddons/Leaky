@@ -289,7 +289,7 @@ public class ItemCluster
 
     private Component createCountLeakNotification()
     {
-        return Component.literal("Item leak detected — #" + id)
+        return Component.literal("Item leak detected - #" + id)
             .withStyle(ChatFormatting.GOLD)
             .append("\n")
             .append(Component.literal(count() + " items are continuing to accumulate").withStyle(ChatFormatting.WHITE))
@@ -303,7 +303,7 @@ public class ItemCluster
     {
         final int wastePercentage = arrivals == 0 ? 0 : (int) Math.round(despawns * 100.0 / arrivals);
 
-        return Component.literal("Despawning item leak detected — #" + id)
+        return Component.literal("Despawning item leak detected - #" + id)
             .withStyle(ChatFormatting.GOLD)
             .append("\n")
             .append(Component.literal(despawns + " of " + arrivals + " arriving items have despawned (~" + wastePercentage + "%)").withStyle(ChatFormatting.WHITE))
@@ -315,7 +315,7 @@ public class ItemCluster
 
     private Component createCriticalNotification()
     {
-        return Component.literal("Critical item concentration — #" + id)
+        return Component.literal("Critical item concentration - #" + id)
             .withStyle(ChatFormatting.RED)
             .append("\n")
             .append(Component.literal(count() + " dropped items have reached the automatic cleanup threshold").withStyle(ChatFormatting.WHITE))
@@ -327,7 +327,7 @@ public class ItemCluster
 
     public Component createDeletionNotification()
     {
-        return Component.literal("Deleting critical item concentration — #" + id)
+        return Component.literal("Deleting critical item concentration - #" + id)
             .withStyle(ChatFormatting.RED)
             .append("\n")
             .append(Component.literal(count() + " dropped items have reached the automatic cleanup threshold").withStyle(ChatFormatting.WHITE))
@@ -347,7 +347,7 @@ public class ItemCluster
         final long ageSeconds = (level.getGameTime() - creationTime) / 20;
         final int count = count();
 
-        return Component.literal("Item Cluster #" + id + " — ")
+        return Component.literal("Item Cluster #" + id + " - ")
             .withStyle(ChatFormatting.GRAY)
             .append(Component.literal(clusterState.toString()).withStyle(getStateColor(clusterState)))
             .append("\n")
@@ -367,7 +367,7 @@ public class ItemCluster
         final long ageSeconds = (level.getGameTime() - creationTime) / 20;
         final int count = count();
 
-        return Component.literal("Item Cluster #" + id + " — ")
+        return Component.literal("Item Cluster #" + id + " - ")
             .withStyle(ChatFormatting.GRAY)
             .append(Component.literal(clusterState.toString()).withStyle(getStateColor(clusterState)))
             .append("\n")
