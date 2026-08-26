@@ -15,6 +15,8 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.function.Predicate;
+
 @Mixin(value = ItemEntity.class, priority = 999)
 public abstract class ItemUpdateMixin extends Entity implements IClusterItem
 {
@@ -90,15 +92,18 @@ public abstract class ItemUpdateMixin extends Entity implements IClusterItem
     @Inject(method = "playerTouch", at = @At("HEAD"))
     private void onInteract(final Player p_32040_, final CallbackInfo ci)
     {
-        updateRate = 1;
-        delay = 300;
+        if (getCluster() == null || getCluster().count() < 50)
+        {
+            updateRate = 1;
+            delay = 300;
+        }
     }
 
     @Unique
     private void calculateUpdateRate()
     {
         updateRate = 1;
-        if (tickCount < 20 * 15)
+        if (tickCount < 20 * 15 && getCluster() == null)
         {
             return;
         }
@@ -106,6 +111,13 @@ public abstract class ItemUpdateMixin extends Entity implements IClusterItem
         if (delay > 0)
         {
             delay -= 20;
+
+            // When movement or other effects delay the update throttling, still decrease age when the item is part of a large cluster
+            if (this.age != -32768)
+            {
+                final int clusterSize = getCluster() == null ? 0 : getCluster().count();
+                age += (clusterSize / 20);
+            }
             return;
         }
 
@@ -117,19 +129,21 @@ public abstract class ItemUpdateMixin extends Entity implements IClusterItem
         // Tick slower the longer it exists
         updateRate += tickCount / 200.0;
 
+        final int clusterSize = getCluster() == null ? 0 : getCluster().count();
+
         // If player is far away tick slower
-        if (closePlayer != null && closePlayer.blockPosition().distSqr(blockPosition()) > 32 * 32)
+        if (closePlayer == null || closePlayer.blockPosition().distSqr(blockPosition()) > 32 * 32)
         {
             updateRate += 5;
-            age += 5;
+            if (this.age != -32768 && clusterSize > 0)
+            {
+                age += 5;
+                age += (clusterSize / 20);
+            }
         }
 
         // If many items are stacked slow down ticking and accelerate decay
-        if (getCluster() != null && getCluster().count() > 0)
-        {
-            updateRate += getCluster().count() / 10;
-            age += (getCluster().count() / 15);
-        }
+        updateRate += clusterSize / 10;
 
         // On movement reset
         if (previousPos != null && previousPos != blockPosition() && !previousPos.equals(blockPosition()))

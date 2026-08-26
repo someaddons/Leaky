@@ -10,10 +10,10 @@ public class CommonConfiguration implements ICommonConfig
 
     public String  reportNotification = "NEAREST_PLAYER_LIMITED, ALL_OP";
     public boolean highlightitems     = true;
-    public int     reportThreshold              = 200;
+    public int     reportThreshold              = 100;
     public int     detectionThreshold           = 32;
-    public int     autoremovethreshold          = 400;
-    public int     autoremovenodelaythreshold   = 1500;
+    public int     autoremovethreshold          = 300;
+    public int     autoremovenodelaythreshold   = 1000;
     public long    autoRemoveDelay              = 20 * 30;
     public boolean improveItemPerformance    = true;
     public int     entitySectionLogThreshold = 150;
@@ -37,7 +37,7 @@ public class CommonConfiguration implements ICommonConfig
         entryDetection.addProperty("desc4:", "Set the minimum number of item entities at which Leaky starts tracking data for an item cluster. Default: 32");
         entryDetection.addProperty("detectionThreshold", detectionThreshold);
 
-        entryDetection.addProperty("desc3:", "Set the minimum size of an item cluster at which notifications can be sent. Default: 200");
+        entryDetection.addProperty("desc3:", "Set the minimum size of an item cluster at which notifications can be sent. Default: 100");
         entryDetection.addProperty("reportThreshold", reportThreshold);
 
         entryDetection.addProperty("desc6:",
@@ -55,7 +55,7 @@ public class CommonConfiguration implements ICommonConfig
         entryDetection.add("autoremoval", subEntryRemoval);
         subEntryRemoval.addProperty("desc0:","This section contains settings for the automatic removal of oversized item clusters. Deleted clusters can be restored via command, using /leaky deletionHistory");
         subEntryRemoval.addProperty("desc1:",
-            "Set the minimum cluster size at which an item cluster can be automatically removed. A cluster is observed for at least 120 seconds before it can reach this state. default: 400");
+            "Set the minimum cluster size at which an item cluster can be automatically removed. A cluster is observed for at least 120 seconds before it can reach this state. default: 300");
         subEntryRemoval.addProperty("autoremovethreshold", autoremovethreshold);
 
         subEntryRemoval.addProperty("desc2:",
@@ -63,7 +63,7 @@ public class CommonConfiguration implements ICommonConfig
         subEntryRemoval.addProperty("autoRemoveDelay", autoRemoveDelay / 20);
 
         subEntryRemoval.addProperty("desc3:",
-            "Set the minimum cluster size at which an item cluster is immediately deleted. This is intended as a very high threshold to help prevent server crashes caused by extreme item entity concentrations. default: 1500");
+            "Set the minimum cluster size at which an item cluster is immediately deleted. This is intended as a very high threshold to help prevent server crashes caused by extreme item entity concentrations. default: 1000");
         subEntryRemoval.addProperty("autoremovenodelaythreshold", autoremovenodelaythreshold);
 
         // Item performance // TODO: MOre configs?

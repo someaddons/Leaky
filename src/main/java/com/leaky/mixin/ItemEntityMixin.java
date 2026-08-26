@@ -1,6 +1,5 @@
 package com.leaky.mixin;
 
-import com.leaky.Leaky;
 import com.leaky.config.CommonConfiguration;
 import com.leaky.storage.DetectionSource;
 import com.leaky.storage.IClusterItem;
@@ -14,9 +13,11 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 @Mixin(ItemEntity.class)
 /**
@@ -46,10 +47,52 @@ public abstract class ItemEntityMixin extends Entity
             return;
         }
 
+        checkItems();
+    }
+
+    @Unique
+    private int mergeNearbyItemsCount = 0;
+
+    @Unique
+    private final Predicate<ItemEntity> sizeTrackingPredicate = itemEntity ->
+    {
+        if (itemEntity == null || itemEntity == (Object) this)
+        {
+            return false;
+        }
+
+        mergeNearbyItemsCount++;
+        return itemEntity.isMergable();
+    };
+
+    @ModifyArg(method = "mergeWithNeighbours", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;getEntitiesOfClass(Ljava/lang/Class;Lnet/minecraft/world/phys/AABB;Ljava/util/function/Predicate;)Ljava/util/List;")
+        , index = 2)
+    private Predicate<ItemEntity> reUsePredicate(Predicate<ItemEntity> original)
+    {
+        return sizeTrackingPredicate;
+    }
+
+    @Inject(method = "mergeWithNeighbours", at = @At("HEAD"))
+    private void resetMergeNearbyItemCounts(final CallbackInfo ci)
+    {
+        mergeNearbyItemsCount = 0;
+    }
+
+    @Inject(method = "mergeWithNeighbours", at = @At("RETURN"))
+    private void checkMergeNearbyItemCounts(final CallbackInfo ci)
+    {
+        if (mergeNearbyItemsCount > CommonConfiguration.config.getCommonConfig().detectionThreshold && !checked
+        && (this instanceof IClusterItem iClusterItem && iClusterItem.getCluster() == null))
+        {
+            checkItems();
+        }
+    }
+
+    @Unique
+    private void checkItems()
+    {
         checked = true;
-
-        List<ItemEntity> items = this.level().getEntitiesOfClass(ItemEntity.class, this.getBoundingBox().inflate(2.5D, 1.0D, 2.5D));
-
+        List<ItemEntity> items = this.level().getEntitiesOfClass(ItemEntity.class, this.getBoundingBox().inflate(5D, 2.0D, 5D));
         if (level().isClientSide && CommonConfiguration.config.getCommonConfig().highlightitems && items.size() > CommonConfiguration.config.getCommonConfig().reportThreshold)
         {
             for (final ItemEntity item : items)

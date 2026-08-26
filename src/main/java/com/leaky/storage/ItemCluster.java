@@ -75,8 +75,8 @@ public class ItemCluster
         }
         else if (clusterState == ClusterState.OBSERVING)
         {
-            final int suspiciousThreshold = Math.min(CommonConfiguration.config.getCommonConfig().reportThreshold, 100);
-            if ((age > 20 * 60 && arrivals > 0 && count() > initial && count() > suspiciousThreshold) || (age > 20 * 60 * 5 && arrivals > 100 && despawns > 0
+            final int suspiciousThreshold = Math.min(CommonConfiguration.config.getCommonConfig().reportThreshold, 50);
+            if ((age > 20 * 60 && arrivals > 0 && count() > initial && count() > suspiciousThreshold) || (age > 20 * 60 * 5 && arrivals > 50 && despawns > 0
                 && count() >= suspiciousThreshold))
             {
                 clusterState = ClusterState.SUSPICIOUS;

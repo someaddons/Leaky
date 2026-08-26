@@ -62,9 +62,9 @@ public class ItemClusterManager
             cluster.tryAdd(itemEntity);
         }
 
-        int size = cluster.count();
+        int size = Math.max(items.size(), cluster.count());
         // Large leaks bypass the cooldown, to allow deletion before server crashes
-        if (size > CommonConfiguration.config.getCommonConfig().autoremovenodelaythreshold)
+        if (size >= CommonConfiguration.config.getCommonConfig().autoremovenodelaythreshold)
         {
             cluster.sendNotification(cluster.createDeletionNotification(), ClusterState.PENDING_DELETION);
             removeCluster(cluster.id());
