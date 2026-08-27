@@ -43,7 +43,7 @@ public class Command
                     }
                     else
                     {
-                        context.getSource().sendSystemMessage(Component.literal("Cluster ID does not exist, check the list with leaky status"));
+                        context.getSource().sendSystemMessage(Component.translatable("leaky.command.cluster_not_found"));
                     }
                 }
                 return 1;
@@ -56,17 +56,17 @@ public class Command
                     ItemClusterManager clusterManager = serverLevelClusterManager.leaky$getItemClusterManager();
                     if (!clusterManager.removeCluster(clusterID))
                     {
-                        context.getSource().sendSystemMessage(Component.literal("Cluster ID does not exist, check the list with leaky status"));
+                        context.getSource().sendSystemMessage(Component.translatable("leaky.command.cluster_not_found"));
                     }
                     else
                     {
-                        context.getSource().sendSystemMessage(Component.literal("Removed cluster:" + clusterID+" and its items."));
+                        context.getSource().sendSystemMessage(Component.translatable("leaky.command.cluster_removed", clusterID));
                     }
                 }
                 return 1;
             })))
             .then(Commands.literal("deletionHistory").executes(context -> {
-                context.getSource().sendSystemMessage(Component.literal("Leaky cluster deletion history since last server restart/game launch:"));
+                context.getSource().sendSystemMessage(Component.translatable("leaky.command.history.header"));
 
                 for (ServerLevel level : context.getSource().getServer().getAllLevels())
                 {

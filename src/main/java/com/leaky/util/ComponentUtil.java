@@ -16,7 +16,7 @@ public class ComponentUtil
      */
     public static Component createLocationComponent(final BlockPos position, final ResourceKey<Level> dimension)
     {
-        return Component.literal("[" + position.toShortString() + "]")
+        return Component.translatable("leaky.action.location", position.toShortString())
             .withStyle(style -> style.withColor(ChatFormatting.AQUA)
                 .withUnderlined(true)
                 .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/execute in "+dimension.location()+" run tp " + position.getX() + " " + position.getY() + " " + position.getZ())));
@@ -29,7 +29,7 @@ public class ComponentUtil
      */
     public static Component createInspectComponent(final int clusterID, final ResourceKey<Level> dimension)
     {
-        return Component.literal("[Inspect]")
+        return Component.translatable("leaky.action.inspect")
             .withStyle(style -> style.withColor(ChatFormatting.AQUA).withUnderlined(true).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/execute in "+dimension.location()+" run leaky inspect " + clusterID)));
     }
 
@@ -42,7 +42,7 @@ public class ComponentUtil
      */
     public static Component createRestoreComponent(final int clusterID, final ResourceKey<Level> dimension)
     {
-        return Component.literal("[RESTORE]")
+        return Component.translatable("leaky.action.restore")
             .withStyle(style -> style.withColor(ChatFormatting.AQUA)
                 .withUnderlined(true)
                 .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/leaky restore " + clusterID + " "+dimension.location())));
@@ -53,18 +53,18 @@ public class ComponentUtil
      * @param seconds
      * @return
      */
-    public static String formatAge(final long seconds)
+    public static Component formatAge(final long seconds)
     {
         if (seconds < 60)
         {
-            return seconds + "s";
+            return Component.translatable("leaky.time.seconds", seconds);
         }
 
         if (seconds < 3600)
         {
-            return seconds / 60 + "m " + seconds % 60 + "s";
+            return Component.translatable("leaky.time.minutes_seconds", seconds / 60, seconds % 60);
         }
 
-        return seconds / 3600 + "h " + (seconds % 3600) / 60 + "m";
+        return Component.translatable("leaky.time.hours_minutes", seconds / 3600, (seconds % 3600) / 60);
     }
 }

@@ -1,5 +1,41 @@
 {
-  "leaky.removedItems": ". Cleaned items automatically to prevent lag",
-  "leaky.detect": "Detected: %d stacked items in %s at: ",
-  "leaky.status": "Listing all actively tracked clusters of item entities"
+  "leaky.status": "Listing all actively tracked clusters of item entities",
+
+  "leaky.command.cluster_not_found": "Cluster ID does not exist; check the list with /leaky status",
+  "leaky.command.cluster_removed": "Removed cluster #%s and its items.",
+  "leaky.command.history.header": "Leaky cluster deletion history since the last server restart or game launch:",
+
+  "leaky.notification.leak.title": "Item leak detected - #%s",
+  "leaky.notification.leak.accumulating": "%s items are continuing to accumulate",
+  "leaky.notification.leak.activity": "Arrivals: %1$s | Age: %2$s",
+  "leaky.notification.waste.title": "Despawning item leak detected - #%s",
+  "leaky.notification.waste.summary": "%1$s of %2$s arriving items have despawned (~%3$s%%)",
+  "leaky.notification.waste.remaining": "%1$s items remain | Age: %2$s",
+  "leaky.notification.critical.title": "Critical item concentration - #%s",
+  "leaky.notification.critical.threshold": "%s dropped items have reached the automatic cleanup threshold",
+  "leaky.notification.critical.warning": "Leaky will clean this cluster if it remains unattended.",
+  "leaky.notification.deletion.title": "Deleting critical item concentration - #%s",
+  "leaky.notification.deletion.success": "Leaky removed those items successfully",
+
+  "leaky.cluster.report.title": "Item Cluster #%s - ",
+  "leaky.cluster.report.items": "%s items",
+  "leaky.cluster.report.age": " | %s old",
+  "leaky.cluster.report.statistics": "Arrivals: %1$s | Despawned: %2$s | Picked up: %3$s | Unknown removals: %4$s",
+  "leaky.cluster.state.created": "Created",
+  "leaky.cluster.state.observing": "Observing",
+  "leaky.cluster.state.suspicious": "Suspicious",
+  "leaky.cluster.state.leak": "Leak",
+  "leaky.cluster.state.pending_deletion": "Pending deletion",
+
+  "leaky.history.restored": "Restored %s items at: ",
+  "leaky.history.report.title": "Deletion History Item Cluster #%s - ",
+  "leaky.history.report.deleted": "Deleted %s items",
+
+  "leaky.action.location": "[%s]",
+  "leaky.action.inspect": "[Inspect]",
+  "leaky.action.restore": "[RESTORE]",
+
+  "leaky.time.seconds": "%ss",
+  "leaky.time.minutes_seconds": "%1$sm %2$ss",
+  "leaky.time.hours_minutes": "%1$sh %2$sm"
 }

@@ -62,8 +62,8 @@ public class ItemCluster
         final long age = (level.getGameTime() - creationTime);
         if (clusterState == ClusterState.CREATED)
         {
-            // After 30 seconds we start considering the cluster, before its an uncertain period. E.g. a player may be breaking a couple chests
-            if (age > 20 * 30)
+            // After 15 seconds we start considering the cluster, before its an uncertain period. E.g. a player may be breaking a couple chests
+            if (age > 20 * 15)
             {
                 clusterState = ClusterState.OBSERVING;
                 arrivals = 0;
@@ -289,12 +289,12 @@ public class ItemCluster
 
     private Component createCountLeakNotification()
     {
-        return Component.literal("Item leak detected - #" + id)
+        return Component.translatable("leaky.notification.leak.title", id)
             .withStyle(ChatFormatting.GOLD)
             .append("\n")
-            .append(Component.literal(count() + " items are continuing to accumulate").withStyle(ChatFormatting.WHITE))
+            .append(Component.translatable("leaky.notification.leak.accumulating", count()).withStyle(ChatFormatting.WHITE))
             .append("\n")
-            .append(Component.literal("Arrivals: " + arrivals + " | Age: " + formatAge((level.getGameTime() - creationTime) / 20)).withStyle(ChatFormatting.GRAY))
+            .append(Component.translatable("leaky.notification.leak.activity", arrivals, formatAge((level.getGameTime() - creationTime) / 20)).withStyle(ChatFormatting.GRAY))
             .append("\n")
             .append(createLocationComponent(position, level.dimension()));
     }
@@ -303,36 +303,36 @@ public class ItemCluster
     {
         final int wastePercentage = arrivals == 0 ? 0 : (int) Math.round(despawns * 100.0 / arrivals);
 
-        return Component.literal("Despawning item leak detected - #" + id)
+        return Component.translatable("leaky.notification.waste.title", id)
             .withStyle(ChatFormatting.GOLD)
             .append("\n")
-            .append(Component.literal(despawns + " of " + arrivals + " arriving items have despawned (~" + wastePercentage + "%)").withStyle(ChatFormatting.WHITE))
+            .append(Component.translatable("leaky.notification.waste.summary", despawns, arrivals, wastePercentage).withStyle(ChatFormatting.WHITE))
             .append("\n")
-            .append(Component.literal(count() + " items remain | Age: " + formatAge((level.getGameTime() - creationTime) / 20)).withStyle(ChatFormatting.GRAY))
+            .append(Component.translatable("leaky.notification.waste.remaining", count(), formatAge((level.getGameTime() - creationTime) / 20)).withStyle(ChatFormatting.GRAY))
             .append("\n")
             .append(createLocationComponent(position, level.dimension()));
     }
 
     private Component createCriticalNotification()
     {
-        return Component.literal("Critical item concentration - #" + id)
+        return Component.translatable("leaky.notification.critical.title", id)
             .withStyle(ChatFormatting.RED)
             .append("\n")
-            .append(Component.literal(count() + " dropped items have reached the automatic cleanup threshold").withStyle(ChatFormatting.WHITE))
+            .append(Component.translatable("leaky.notification.critical.threshold", count()).withStyle(ChatFormatting.WHITE))
             .append("\n")
-            .append(Component.literal("Leaky will clean this cluster if it remains unattended.").withStyle(ChatFormatting.GRAY))
+            .append(Component.translatable("leaky.notification.critical.warning").withStyle(ChatFormatting.GRAY))
             .append("\n")
             .append(createLocationComponent(position, level.dimension()));
     }
 
     public Component createDeletionNotification()
     {
-        return Component.literal("Deleting critical item concentration - #" + id)
+        return Component.translatable("leaky.notification.deletion.title", id)
             .withStyle(ChatFormatting.RED)
             .append("\n")
-            .append(Component.literal(count() + " dropped items have reached the automatic cleanup threshold").withStyle(ChatFormatting.WHITE))
+            .append(Component.translatable("leaky.notification.critical.threshold", count()).withStyle(ChatFormatting.WHITE))
             .append("\n")
-            .append(Component.literal("Leaky removed those items successfully").withStyle(ChatFormatting.GRAY))
+            .append(Component.translatable("leaky.notification.deletion.success").withStyle(ChatFormatting.GRAY))
             .append("\n")
             .append(createLocationComponent(position, level.dimension()));
     }
@@ -347,12 +347,12 @@ public class ItemCluster
         final long ageSeconds = (level.getGameTime() - creationTime) / 20;
         final int count = count();
 
-        return Component.literal("Item Cluster #" + id + " - ")
+        return Component.translatable("leaky.cluster.report.title", id)
             .withStyle(ChatFormatting.GRAY)
-            .append(Component.literal(clusterState.toString()).withStyle(getStateColor(clusterState)))
+            .append(Component.translatable(clusterState.getTranslationKey()).withStyle(getStateColor(clusterState)))
             .append("\n")
-            .append(Component.literal(count + " items").withStyle(ChatFormatting.WHITE))
-            .append(Component.literal(" | " + formatAge(ageSeconds) + " old").withStyle(ChatFormatting.GRAY))
+            .append(Component.translatable("leaky.cluster.report.items", count).withStyle(ChatFormatting.WHITE))
+            .append(Component.translatable("leaky.cluster.report.age", formatAge(ageSeconds)).withStyle(ChatFormatting.GRAY))
             .append("\n")
             .append(createInspectComponent(id, level.dimension())).append(" ").append(createLocationComponent(position, level.dimension()));
     }
@@ -367,22 +367,19 @@ public class ItemCluster
         final long ageSeconds = (level.getGameTime() - creationTime) / 20;
         final int count = count();
 
-        return Component.literal("Item Cluster #" + id + " - ")
+        return Component.translatable("leaky.cluster.report.title", id)
             .withStyle(ChatFormatting.GRAY)
-            .append(Component.literal(clusterState.toString()).withStyle(getStateColor(clusterState)))
+            .append(Component.translatable(clusterState.getTranslationKey()).withStyle(getStateColor(clusterState)))
             .append("\n")
-            .append(Component.literal(count + " items").withStyle(ChatFormatting.WHITE))
-            .append(Component.literal(" | " + formatAge(ageSeconds) + " old").withStyle(ChatFormatting.GRAY))
+            .append(Component.translatable("leaky.cluster.report.items", count).withStyle(ChatFormatting.WHITE))
+            .append(Component.translatable("leaky.cluster.report.age", formatAge(ageSeconds)).withStyle(ChatFormatting.GRAY))
             .append("\n")
             .append(createInspectComponent(id, level.dimension())).append(" ").append(createLocationComponent(position, level.dimension()))
             .append("\n")
-            .append(Component.literal("Arrivals: ").withStyle(ChatFormatting.GRAY))
-            .append(Component.literal(Integer.toString(arrivals)).withStyle(ChatFormatting.AQUA))
-            .append(Component.literal(" | Despawned: ").withStyle(ChatFormatting.GRAY))
-            .append(Component.literal(Integer.toString(despawns)).withStyle(ChatFormatting.RED))
-            .append(Component.literal(" | Picked up: ").withStyle(ChatFormatting.GRAY))
-            .append(Component.literal(Integer.toString(pickups)).withStyle(ChatFormatting.GREEN))
-            .append(Component.literal(" | Unknown removals: ").withStyle(ChatFormatting.GRAY))
-            .append(Component.literal(Integer.toString(otherRemovals)).withStyle(ChatFormatting.AQUA));
+            .append(Component.translatable("leaky.cluster.report.statistics",
+                Component.literal(Integer.toString(arrivals)).withStyle(ChatFormatting.AQUA),
+                Component.literal(Integer.toString(despawns)).withStyle(ChatFormatting.RED),
+                Component.literal(Integer.toString(pickups)).withStyle(ChatFormatting.GREEN),
+                Component.literal(Integer.toString(otherRemovals)).withStyle(ChatFormatting.AQUA)).withStyle(ChatFormatting.GRAY));
     }
 }

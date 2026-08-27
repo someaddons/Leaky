@@ -62,19 +62,19 @@ public class ClusterHistory
             level.addFreshEntity(entity);
         }
 
-        context.getSource().sendSystemMessage(Component.literal("Restored " + stacks.size() + " items at: ").append(ComponentUtil.createLocationComponent(position, level.dimension())));
+        context.getSource().sendSystemMessage(Component.translatable("leaky.history.restored", stacks.size()).append(ComponentUtil.createLocationComponent(position, level.dimension())));
         return true;
     }
 
     public Component report(final CommandSourceStack source)
     {
         final long ageSeconds = (source.getLevel().getGameTime() - time) / 20;
-        return Component.literal("Deletion History Item Cluster #" + id + " - ")
+        return Component.translatable("leaky.history.report.title", id)
             .withStyle(ChatFormatting.GRAY)
-            .append(Component.literal(state.toString()).withStyle(getStateColor(state)))
+            .append(Component.translatable(state.getTranslationKey()).withStyle(getStateColor(state)))
             .append("\n")
-            .append(Component.literal("Deleted " + stacks.size() + " items").withStyle(ChatFormatting.WHITE))
-            .append(Component.literal(" | " + formatAge(ageSeconds) + " old").withStyle(ChatFormatting.GRAY))
+            .append(Component.translatable("leaky.history.report.deleted", stacks.size()).withStyle(ChatFormatting.WHITE))
+            .append(Component.translatable("leaky.cluster.report.age", formatAge(ageSeconds)).withStyle(ChatFormatting.GRAY))
             .append("\n")
             .append(createLocationComponent(position, dimension)).append(" ").append(createRestoreComponent(id, dimension));
     }

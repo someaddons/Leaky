@@ -8,11 +8,13 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import org.jline.utils.Log;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -268,23 +270,16 @@ public class ItemClusterManager
             return;
         }
 
-        final List<ItemCluster> suspiciousClusters = new ArrayList<>();
-        for (final ItemCluster cluster : clusterStorage)
-        {
-            if (cluster.getClusterState() != ClusterState.CREATED)
-            {
-                suspiciousClusters.add(cluster);
-            }
-        }
-
-        if (suspiciousClusters.isEmpty())
+        final List<ItemCluster> clusters = new ArrayList<>(clusterStorage);
+        if (clusters.isEmpty())
         {
             return;
         }
 
         source.sendSystemMessage(Component.translatable(level.dimension().location().toLanguageKey()).withStyle(ChatFormatting.DARK_AQUA));
 
-        for (final ItemCluster cluster : suspiciousClusters)
+        clusters.sort(Comparator.comparing(ItemCluster::getClusterState));
+        for (final ItemCluster cluster : clusters)
         {
             source.sendSystemMessage(cluster.minimalStatusReport());
         }
