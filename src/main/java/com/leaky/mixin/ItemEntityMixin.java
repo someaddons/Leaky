@@ -1,7 +1,9 @@
 package com.leaky.mixin;
 
-import com.leaky.INearbyItemAwareEntity;
-import com.leaky.Leaky;
+import com.leaky.config.CommonConfiguration;
+import com.leaky.storage.DetectionSource;
+import com.leaky.storage.IClusterItem;
+import com.leaky.storage.ServerLevelClusterManager;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -11,9 +13,11 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 @Mixin(ItemEntity.class)
 /**
@@ -21,7 +25,8 @@ import java.util.List;
  */
 public abstract class ItemEntityMixin extends Entity
 {
-    @Shadow private int age;
+    @Shadow
+    private int age;
 
     public ItemEntityMixin(final EntityType<?> entityTypeIn, final Level worldIn)
     {
@@ -32,45 +37,75 @@ public abstract class ItemEntityMixin extends Entity
     ItemEntity self = (ItemEntity) (Object) this;
 
     @Unique
-    boolean reported = false;
-
+    boolean checked = false;
 
     @Inject(method = "tick", at = @At(value = "TAIL"))
     private void checkSize(CallbackInfo ci)
     {
-        if (reported || age < 20 * 60 || tickCount % 400 != 0)
+        if (level().isClientSide || checked || age < 20 * 60 || tickCount % 400 != 0 || (this instanceof IClusterItem iClusterItem && iClusterItem.getCluster() != null))
         {
             return;
         }
 
-        List<ItemEntity> items = this.level().getEntitiesOfClass(ItemEntity.class, this.getBoundingBox().inflate(2.5D, 1.0D, 2.5D));
+        checkItems();
+    }
 
-        if (items.size() > Leaky.config.getCommonConfig().reportThreshold)
+    @Unique
+    private int mergeNearbyItemsCount = 0;
+
+    @Unique
+    private final Predicate<ItemEntity> sizeTrackingPredicate = itemEntity ->
+    {
+        if (itemEntity == null || itemEntity == (Object) this)
         {
-            if (level().isClientSide && Leaky.config.getCommonConfig().highlightitems)
-            {
-                for (final ItemEntity item : items)
-                {
-                    item.setSharedFlag(6, true);
-                }
-            }
+            return false;
+        }
 
-            reported = true;
+        mergeNearbyItemsCount++;
+        return itemEntity.isMergable();
+    };
 
-            if (!level().isClientSide)
+    @ModifyArg(method = "mergeWithNeighbours", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;getEntitiesOfClass(Ljava/lang/Class;Lnet/minecraft/world/phys/AABB;Ljava/util/function/Predicate;)Ljava/util/List;")
+        , index = 2)
+    private Predicate<ItemEntity> reUsePredicate(Predicate<ItemEntity> original)
+    {
+        return sizeTrackingPredicate;
+    }
+
+    @Inject(method = "mergeWithNeighbours", at = @At("HEAD"))
+    private void resetMergeNearbyItemCounts(final CallbackInfo ci)
+    {
+        mergeNearbyItemsCount = 0;
+    }
+
+    @Inject(method = "mergeWithNeighbours", at = @At("RETURN"))
+    private void checkMergeNearbyItemCounts(final CallbackInfo ci)
+    {
+        if (mergeNearbyItemsCount > CommonConfiguration.config.getCommonConfig().detectionThreshold && !checked
+        && !level().isClientSide &&(this instanceof IClusterItem iClusterItem && iClusterItem.getCluster() == null))
+        {
+            checkItems();
+        }
+    }
+
+    @Unique
+    private void checkItems()
+    {
+        checked = true;
+        List<ItemEntity> items = this.level().getEntitiesOfClass(ItemEntity.class, this.getBoundingBox().inflate(5D, 2.0D, 5D));
+        if (CommonConfiguration.config.getCommonConfig().highlightitems && items.size() > CommonConfiguration.config.getCommonConfig().reportThreshold)
+        {
+            for (final ItemEntity item : items)
             {
-                Leaky.detectedItemLeak(self, items, 2);
+                item.setSharedFlag(6, true);
             }
         }
-        else
+
+        if (items.size() > CommonConfiguration.config.getCommonConfig().detectionThreshold)
         {
-            final int size = items.size();
-            for(final ItemEntity item: items)
+            if (level() instanceof ServerLevelClusterManager serverLevelClusterManager)
             {
-                if (item instanceof INearbyItemAwareEntity nearbyItemAware)
-                {
-                    nearbyItemAware.setNearbyItems(size);
-                }
+                serverLevelClusterManager.leaky$getItemClusterManager().detectedItemLeak(self, items, DetectionSource.ITEM_TICK);
             }
         }
     }

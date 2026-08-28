@@ -3,9 +3,11 @@
   "package": "com.leaky.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "ItemEntityMixin",
     "EntitySectionMixin",
-    "ItemUpdateMixin"
+    "ItemEntityMixin",
+    "ItemUpdateMixin",
+    "storage.ClusterItemMixin",
+    "storage.ServerLevelMixin"
   ],
   "client": [
   ],

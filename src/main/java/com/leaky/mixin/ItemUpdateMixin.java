@@ -1,7 +1,7 @@
 package com.leaky.mixin;
 
-import com.leaky.INearbyItemAwareEntity;
-import com.leaky.Leaky;
+import com.leaky.config.CommonConfiguration;
+import com.leaky.storage.IClusterItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -15,8 +15,10 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.function.Predicate;
+
 @Mixin(value = ItemEntity.class, priority = 999)
-public abstract class ItemUpdateMixin extends Entity implements INearbyItemAwareEntity
+public abstract class ItemUpdateMixin extends Entity implements IClusterItem
 {
     @Shadow
     private int age;
@@ -28,9 +30,6 @@ public abstract class ItemUpdateMixin extends Entity implements INearbyItemAware
 
     @Unique
     private int updateRate = 1;
-
-    @Unique
-    private int nearbyItems = 0;
 
     @Unique
     private boolean waterState = false;
@@ -93,15 +92,18 @@ public abstract class ItemUpdateMixin extends Entity implements INearbyItemAware
     @Inject(method = "playerTouch", at = @At("HEAD"))
     private void onInteract(final Player p_32040_, final CallbackInfo ci)
     {
-        updateRate = 1;
-        delay = 300;
+        if (getCluster() == null || getCluster().count() < 50)
+        {
+            updateRate = 1;
+            delay = 300;
+        }
     }
 
     @Unique
     private void calculateUpdateRate()
     {
         updateRate = 1;
-        if (tickCount < 20 * 15)
+        if (tickCount < 20 * 15 && getCluster() == null)
         {
             return;
         }
@@ -109,10 +111,17 @@ public abstract class ItemUpdateMixin extends Entity implements INearbyItemAware
         if (delay > 0)
         {
             delay -= 20;
+
+            // When movement or other effects delay the update throttling, still decrease age when the item is part of a large cluster
+            if (this.age != -32768)
+            {
+                final int clusterSize = getCluster() == null ? 0 : getCluster().count();
+                age += (clusterSize / 20);
+            }
             return;
         }
 
-        if (!Leaky.config.getCommonConfig().improveItemPerformance)
+        if (!CommonConfiguration.config.getCommonConfig().improveItemPerformance)
         {
             return;
         }
@@ -120,19 +129,21 @@ public abstract class ItemUpdateMixin extends Entity implements INearbyItemAware
         // Tick slower the longer it exists
         updateRate += tickCount / 200.0;
 
+        final int clusterSize = getCluster() == null ? 0 : getCluster().count();
+
         // If player is far away tick slower
-        if (closePlayer != null && closePlayer.blockPosition().distSqr(blockPosition()) > 32 * 32)
+        if (closePlayer == null || closePlayer.blockPosition().distSqr(blockPosition()) > 32 * 32)
         {
             updateRate += 5;
-            age += 5;
+            if (this.age != -32768 && clusterSize > 0)
+            {
+                age += 5;
+                age += (clusterSize / 20);
+            }
         }
 
         // If many items are stacked slow down ticking and accelerate decay
-        if (nearbyItems > 0)
-        {
-            updateRate += nearbyItems / 10;
-            age += (nearbyItems / 15);
-        }
+        updateRate += clusterSize / 10;
 
         // On movement reset
         if (previousPos != null && previousPos != blockPosition() && !previousPos.equals(blockPosition()))
@@ -141,17 +152,5 @@ public abstract class ItemUpdateMixin extends Entity implements INearbyItemAware
             delay = 300;
         }
         previousPos = blockPosition();
-    }
-
-    @Override
-    public int getNearbyItems()
-    {
-        return nearbyItems;
-    }
-
-    @Override
-    public void setNearbyItems(final int items)
-    {
-        nearbyItems = Math.max(nearbyItems, items);
     }
 }
