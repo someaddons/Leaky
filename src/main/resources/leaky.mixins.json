@@ -4,9 +4,11 @@
   "compatibilityLevel": "JAVA_21",
   "refmap": "leaky.refmap.json",
   "mixins": [
-    "ItemEntityMixin",
     "EntitySectionMixin",
-    "ItemUpdateMixin"
+    "ItemEntityMixin",
+    "ItemUpdateMixin",
+    "storage.ClusterItemMixin",
+    "storage.ServerLevelMixin"
   ],
   "client": [
   ],
