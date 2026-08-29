@@ -70,6 +70,7 @@ public class ItemCluster
                 arrivals = 0;
                 despawns = 0;
                 pickups = 0;
+                checkSurroundingItems();
                 initial = count();
                 checkState();
             }
@@ -80,6 +81,7 @@ public class ItemCluster
             if ((age > 20 * 60 && arrivals > 0 && count() > initial && count() > suspiciousThreshold) || (age > 20 * 60 * 5 && arrivals > 50 && despawns > 0
                 && count() >= suspiciousThreshold))
             {
+                checkSurroundingItems();
                 clusterState = ClusterState.SUSPICIOUS;
                 checkState();
             }
@@ -89,6 +91,7 @@ public class ItemCluster
             // Normal leak
             if (age > 20 * 90 && count() >= CommonConfiguration.config.getCommonConfig().reportThreshold && arrivals > 30)
             {
+                checkSurroundingItems();
                 sendNotification(createCountLeakNotification(), ClusterState.LEAK);
                 clusterState = ClusterState.LEAK;
 
@@ -97,6 +100,7 @@ public class ItemCluster
             // Item despawn waste leak, most items being produced keep despawning
             else if (age > 20 * 60 * 8 && count() >= 100 && arrivals > 300 && despawns > 300 && (despawns >= arrivals * CommonConfiguration.config.getCommonConfig().wastePercent))
             {
+                checkSurroundingItems();
                 sendNotification(createWasteLeakNotification(), ClusterState.LEAK);
                 clusterState = ClusterState.LEAK;
 
@@ -107,6 +111,7 @@ public class ItemCluster
         {
             if (count() >= CommonConfiguration.config.getCommonConfig().autoremovethreshold)
             {
+                checkSurroundingItems();
                 sendNotification(createCriticalNotification(), ClusterState.PENDING_DELETION);
                 clusterState = ClusterState.PENDING_DELETION;
                 autoDeletionTimePoint = level.getGameTime() + CommonConfiguration.config.getCommonConfig().autoRemoveDelay;
@@ -121,6 +126,14 @@ public class ItemCluster
                 clearItems();
             }
         }
+    }
+
+    /**
+     * Checks for potentially skipped items around
+     */
+    private void checkSurroundingItems()
+    {
+        level.getEntitiesOfClass(ItemEntity.class, new AABB(position).inflate(5D, 2.0D, 5D)).forEach(this::tryAdd);
     }
 
     /**
