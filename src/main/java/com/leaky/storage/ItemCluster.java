@@ -5,6 +5,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.players.NameAndId;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -156,7 +157,7 @@ public class ItemCluster
                     recipients.add(player);
                 }
             }
-            message = message.copy().append("\n").append(Component.translatable(level.dimension().location().toLanguageKey()).withStyle(ChatFormatting.DARK_AQUA));
+            message = message.copy().append("\n").append(Component.translatable(level.dimension().identifier().toLanguageKey()).withStyle(ChatFormatting.DARK_AQUA));
         }
 
         if (configSetting.contains("NEAREST_PLAYER") || configSetting.contains("NEAREST_PLAYER_LIMITED"))
@@ -186,7 +187,7 @@ public class ItemCluster
             for (final Player player : level.getServer().getPlayerList().getPlayers())
             {
                 final double playerDist = player.blockPosition().distSqr(position);
-                if (level.getServer().getPlayerList().isOp(player.getGameProfile()) && playerDist < dist)
+                if (level.getServer().getPlayerList().isOp(new NameAndId(player.getGameProfile())) && playerDist < dist)
                 {
                     dist = playerDist;
                     closest = player;
@@ -202,18 +203,18 @@ public class ItemCluster
         {
             for (final Player player : level.getServer().getPlayerList().getPlayers())
             {
-                if (level.getServer().getPlayerList().isOp(player.getGameProfile()))
+                if (level.getServer().getPlayerList().isOp(new NameAndId(player.getGameProfile())))
                 {
                     recipients.add(player);
                 }
             }
 
-            message = message.copy().append("\n").append(Component.translatable(level.dimension().location().toLanguageKey()).withStyle(ChatFormatting.DARK_AQUA)).append("\n");
+            message = message.copy().append("\n").append(Component.translatable(level.dimension().identifier().toLanguageKey()).withStyle(ChatFormatting.DARK_AQUA)).append("\n");
         }
 
         for (Player player : recipients)
         {
-            if (level.getServer().getPlayerList().isOp(player.getGameProfile()))
+            if (level.getServer().getPlayerList().isOp(new NameAndId(player.getGameProfile())))
             {
                 var opMessage = message.copy();
                 opMessage.append(createInspectComponent(id, level.dimension()));

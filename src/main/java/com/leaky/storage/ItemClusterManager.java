@@ -153,7 +153,7 @@ public class ItemClusterManager
             {
                 for (int z = minCellZ; z <= maxCellZ; z++)
                 {
-                    final List<ItemCluster> clusters = clusterSpatialStorage.get(ChunkPos.asLong(x, z));
+                    final List<ItemCluster> clusters = clusterSpatialStorage.get(ChunkPos.pack(x, z));
                     if (clusters != null)
                     {
                         for (final ItemCluster cluster : clusters)
@@ -255,7 +255,7 @@ public class ItemClusterManager
         int indexX = pos.getX() >> 5;
         int indexZ = pos.getZ() >> 5;
 
-        return ChunkPos.asLong(indexX, indexZ);
+        return ChunkPos.pack(indexX, indexZ);
     }
 
     /**
@@ -276,7 +276,7 @@ public class ItemClusterManager
             return;
         }
 
-        source.sendSystemMessage(Component.translatable(level.dimension().location().toLanguageKey()).withStyle(ChatFormatting.DARK_AQUA));
+        source.sendSystemMessage(Component.translatable(level.dimension().identifier().toLanguageKey()).withStyle(ChatFormatting.DARK_AQUA));
 
         clusters.sort(Comparator.comparing(ItemCluster::getClusterState));
         for (final ItemCluster cluster : clusters)
@@ -297,7 +297,7 @@ public class ItemClusterManager
             return false;
         }
 
-        source.sendSystemMessage(Component.translatable(level.dimension().location().toLanguageKey()).withStyle(ChatFormatting.DARK_AQUA));
+        source.sendSystemMessage(Component.translatable(level.dimension().identifier().toLanguageKey()).withStyle(ChatFormatting.DARK_AQUA));
 
         for (int i = historyList.size() - 1; i >= 0; i--)
         {

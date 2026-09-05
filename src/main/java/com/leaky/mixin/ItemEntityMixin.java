@@ -42,7 +42,7 @@ public abstract class ItemEntityMixin extends Entity
     @Inject(method = "tick", at = @At(value = "TAIL"))
     private void checkSize(CallbackInfo ci)
     {
-        if (level().isClientSide || checked || age < 20 * 60 || tickCount % 400 != 0 || (this instanceof IClusterItem iClusterItem && iClusterItem.getCluster() != null))
+        if (level().isClientSide() || checked || age < 20 * 60 || tickCount % 400 != 0 || (this instanceof IClusterItem iClusterItem && iClusterItem.getCluster() != null))
         {
             return;
         }
@@ -82,7 +82,7 @@ public abstract class ItemEntityMixin extends Entity
     private void checkMergeNearbyItemCounts(final CallbackInfo ci)
     {
         if (mergeNearbyItemsCount > CommonConfiguration.config.getCommonConfig().detectionThreshold && !checked
-        && !level().isClientSide &&(this instanceof IClusterItem iClusterItem && iClusterItem.getCluster() == null))
+        && !level().isClientSide() &&(this instanceof IClusterItem iClusterItem && iClusterItem.getCluster() == null))
         {
             checkItems();
         }

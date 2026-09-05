@@ -9,6 +9,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
@@ -49,14 +50,14 @@ public class ClusterHistory
     {
         if (!level.dimension().equals(dimension))
         {
-            Leaky.LOGGER.warn("Cannot restore cluster: " + id + " as it is trying to restore in dimension: " + level.dimension().location() + " but was saved for dimension: "
-                + dimension.location());
+            Leaky.LOGGER.warn("Cannot restore cluster: " + id + " as it is trying to restore in dimension: " + level.dimension().identifier() + " but was saved for dimension: "
+                + dimension.identifier());
             return false;
         }
 
         for (final ItemStack stack : stacks)
         {
-            final ItemEntity entity = EntityType.ITEM.create(level);
+            final ItemEntity entity = EntityType.ITEM.create(level, EntitySpawnReason.COMMAND);
             entity.setItem(stack);
             entity.setPos(position.getX(), position.getY(), position.getZ());
             level.addFreshEntity(entity);
