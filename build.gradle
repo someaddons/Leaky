@@ -120,7 +120,7 @@ configurations {
 }
 
 dependencies {
-    implementation "curse.maven:cupboard-326652:8623573"
+    implementation "curse.maven:cupboard-326652:8623576"
 }
 
 

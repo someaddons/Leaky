@@ -11,6 +11,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -57,7 +58,7 @@ public class ClusterHistory
 
         for (final ItemStack stack : stacks)
         {
-            final ItemEntity entity = EntityType.ITEM.create(level, EntitySpawnReason.COMMAND);
+            final ItemEntity entity = EntityTypes.ITEM.create(level, EntitySpawnReason.COMMAND);
             entity.setItem(stack);
             entity.setPos(position.getX(), position.getY(), position.getZ());
             level.addFreshEntity(entity);
