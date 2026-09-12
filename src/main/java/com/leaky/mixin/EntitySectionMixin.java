@@ -43,7 +43,7 @@ public class EntitySectionMixin<T extends EntityAccess>
 
             if (collection.size() > CommonConfiguration.config.getCommonConfig().autoremovethreshold)
             {
-                if (((ItemEntity) entity).level().isClientSide && CommonConfiguration.config.getCommonConfig().highlightitems)
+                if (((ItemEntity) entity).level().isClientSide() && CommonConfiguration.config.getCommonConfig().highlightitems)
                 {
                     for (final ItemEntity item : collection)
                     {

@@ -15,8 +15,6 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.function.Predicate;
-
 @Mixin(value = ItemEntity.class, priority = 999)
 public abstract class ItemUpdateMixin extends Entity implements IClusterItem
 {
@@ -32,7 +30,7 @@ public abstract class ItemUpdateMixin extends Entity implements IClusterItem
     private int updateRate = 1;
 
     @Unique
-    private boolean waterState = false;
+    private boolean fluidState = false;
 
     @Unique
     private Player closePlayer = null;
@@ -55,23 +53,34 @@ public abstract class ItemUpdateMixin extends Entity implements IClusterItem
             return !noPhysics;
         }
     }
-
+    // TODO: Change to light-tick system instead, which keeps all nonexpensive vanilla logic and sometimes does a "full tick"
     @ModifyConstant(method = "tick", constant = @Constant(intValue = 4, ordinal = 0))
     private int adaptUpdates(final int constant)
     {
-        return constant + updateRate;
+        return constant + (updateRate - 1);
+    }
+
+    @Redirect(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/item/ItemEntity;applyGravity()V"))
+    private void skipGravityWhenPaused(ItemEntity instance)
+    {
+        if (this.onGround() && this.getDeltaMovement().horizontalDistanceSqr() <= 1.0E-5F && (this.tickCount + this.getId()) % (4 + (updateRate - 1)) != 0)
+        {
+            return;
+        }
+
+        this.applyGravity();
     }
 
     @Override
-    protected boolean updateInWaterStateAndDoFluidPushing()
+    public boolean updateFluidInteraction()
     {
         if (tickCount < 20 || (tickCount + getId()) % updateRate == 0)
         {
-            return waterState = super.updateInWaterStateAndDoFluidPushing();
+            return fluidState = super.updateFluidInteraction();
         }
         else
         {
-            return waterState;
+            return fluidState;
         }
     }
 

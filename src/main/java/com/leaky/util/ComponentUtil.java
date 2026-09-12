@@ -19,7 +19,7 @@ public class ComponentUtil
         return Component.translatable("leaky.action.location", position.toShortString())
             .withStyle(style -> style.withColor(ChatFormatting.AQUA)
                 .withUnderlined(true)
-                .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/execute in "+dimension.location()+" run tp " + position.getX() + " " + position.getY() + " " + position.getZ())));
+                .withClickEvent(new ClickEvent.RunCommand("/execute in "+dimension.identifier()+" run tp " + position.getX() + " " + position.getY() + " " + position.getZ())));
     }
 
     /**
@@ -30,7 +30,7 @@ public class ComponentUtil
     public static Component createInspectComponent(final int clusterID, final ResourceKey<Level> dimension)
     {
         return Component.translatable("leaky.action.inspect")
-            .withStyle(style -> style.withColor(ChatFormatting.AQUA).withUnderlined(true).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/execute in "+dimension.location()+" run leaky inspect " + clusterID)));
+            .withStyle(style -> style.withColor(ChatFormatting.AQUA).withUnderlined(true).withClickEvent(new ClickEvent.RunCommand("/execute in "+dimension.identifier()+" run leaky inspect " + clusterID)));
     }
 
     /**
@@ -45,7 +45,7 @@ public class ComponentUtil
         return Component.translatable("leaky.action.restore")
             .withStyle(style -> style.withColor(ChatFormatting.AQUA)
                 .withUnderlined(true)
-                .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/leaky restore " + clusterID + " "+dimension.location())));
+                .withClickEvent(new ClickEvent.RunCommand("/leaky restore " + clusterID + " "+dimension.identifier())));
     }
 
     /**

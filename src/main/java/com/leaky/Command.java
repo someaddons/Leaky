@@ -11,13 +11,14 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.DimensionArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.permissions.Permissions;
 import net.minecraft.world.level.Level;
 
 public class Command
 {
     public LiteralArgumentBuilder<CommandSourceStack> build()
     {
-        return Commands.literal(Leaky.MODID).requires(commandSourceStack -> commandSourceStack.hasPermission(2)).then(Commands.literal("status").executes(context -> {
+        return Commands.literal(Leaky.MODID).requires(commandSourceStack -> commandSourceStack.permissions().hasPermission(Permissions.COMMANDS_ADMIN)).then(Commands.literal("status").executes(context -> {
                 context.getSource().sendSystemMessage(Component.translatable("leaky.status"));
                 for (ServerLevel level : context.getSource().getServer().getAllLevels())
                 {
