@@ -34,7 +34,7 @@ public abstract class ClusterItemMixin implements IClusterItem
         return cluster;
     }
 
-    @Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/neoforged/neoforge/event/EventHooks;onItemExpire(Lnet/minecraft/world/entity/item/ItemEntity;)I", remap = false))
+    @Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/item/ItemEntity;discard()V", ordinal = 1))
     private void onDiscard(final CallbackInfo ci)
     {
         if (cluster == null)
