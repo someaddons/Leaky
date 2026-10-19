@@ -199,14 +199,6 @@ public class ItemClusterManager
             clusterSpatialStorage.put(index, clusterList);
         }
 
-        for (final ItemCluster existingCluster : clusterList)
-        {
-            if (existingCluster.position.distManhattan(entity.blockPosition()) < 10)
-            {
-                Log.warn("Adding cluster twice!", new Exception());
-            }
-        }
-
         clusterList.add(cluster);
         return cluster;
     }
