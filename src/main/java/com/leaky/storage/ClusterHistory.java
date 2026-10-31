@@ -58,7 +58,7 @@ public class ClusterHistory
         if (!(level instanceof final ServerLevelClusterManager serverLevelClusterManager))
         {
             Leaky.LOGGER.warn("Cannot restore cluster: " + id + " supplied level object does not contain a cluster manager:  " + level
-                + dimension.location());
+                + dimension.identifier());
             return false;
         }
 
