@@ -40,6 +40,11 @@ public class ItemCluster
      */
     private ClusterState clusterState = ClusterState.CREATED;
 
+    /**
+     * Disables any auto item removal, only used for restored clusters
+     */
+    private boolean disableAutoClean = false;
+
     public ItemCluster(final Level level, final BlockPos position, final long creationTime)
     {
         this.position = position;
@@ -109,7 +114,7 @@ public class ItemCluster
         }
         else if (clusterState == ClusterState.LEAK && age > 20 * 120)
         {
-            if (count() >= CommonConfiguration.config.getCommonConfig().autoremovethreshold)
+            if (count() >= CommonConfiguration.config.getCommonConfig().autoremovethreshold && !disableAutoClean)
             {
                 checkSurroundingItems();
                 sendNotification(createCriticalNotification(), ClusterState.PENDING_DELETION);
@@ -277,6 +282,11 @@ public class ItemCluster
      */
     public void clearItems()
     {
+        if (itemEntities.isEmpty())
+        {
+            return;
+        }
+
         ClusterHistory history = new ClusterHistory(id, position, itemEntities, level.getGameTime(), clusterState, level.dimension());
         itemEntities.forEach(ItemEntity::discard);
         itemEntities.clear();
@@ -395,5 +405,18 @@ public class ItemCluster
                 Component.literal(Integer.toString(despawns)).withStyle(ChatFormatting.RED),
                 Component.literal(Integer.toString(pickups)).withStyle(ChatFormatting.GREEN),
                 Component.literal(Integer.toString(otherRemovals)).withStyle(ChatFormatting.AQUA)).withStyle(ChatFormatting.GRAY));
+    }
+
+    /**
+     * Disables automatic cluster removal
+     */
+    public void disableAutoClean()
+    {
+        this.disableAutoClean = true;
+    }
+
+    public boolean disabledAutoClean()
+    {
+        return disableAutoClean;
     }
 }
