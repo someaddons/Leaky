@@ -55,15 +55,35 @@ public class ClusterHistory
             return false;
         }
 
+        if (!(level instanceof final ServerLevelClusterManager serverLevelClusterManager))
+        {
+            Leaky.LOGGER.warn("Cannot restore cluster: " + id + " supplied level object does not contain a cluster manager:  " + level
+                + dimension.location());
+            return false;
+        }
+
+        ItemCluster cluster = null;
+
         for (final ItemStack stack : stacks)
         {
             final ItemEntity entity = EntityType.ITEM.create(level, EntitySpawnReason.COMMAND);
             entity.setItem(stack);
             entity.setPos(position.getX(), position.getY(), position.getZ());
             level.addFreshEntity(entity);
+
+            if (cluster == null)
+            {
+                ItemClusterManager clusterManager = serverLevelClusterManager.leaky$getItemClusterManager();
+                cluster = clusterManager.getExistingClusterOrNew(entity, DetectionSource.ITEM_TICK);
+                cluster.disableAutoClean();
+            }
+
+            cluster.tryAdd(entity);
         }
 
-        context.getSource().sendSystemMessage(Component.translatable("leaky.history.restored", stacks.size()).append(ComponentUtil.createLocationComponent(position, level.dimension())));
+        context.getSource()
+            .sendSystemMessage(Component.translatable("leaky.history.restored", stacks.size(), cluster.id())
+                .append(ComponentUtil.createLocationComponent(position, level.dimension())));
         return true;
     }
 
