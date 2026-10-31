@@ -27,7 +27,7 @@
   "leaky.cluster.state.leak": "Leak",
   "leaky.cluster.state.pending_deletion": "Pending deletion",
 
-  "leaky.history.restored": "Restored %s items at: ",
+  "leaky.history.restored": "Restored %s items with new Cluster ID:%s at position: ",
   "leaky.history.report.title": "Deletion History Item Cluster #%s - ",
   "leaky.history.report.deleted": "Deleted %s items",
 

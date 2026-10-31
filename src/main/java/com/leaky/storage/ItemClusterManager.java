@@ -64,7 +64,7 @@ public class ItemClusterManager
 
         int size = Math.max(items.size(), cluster.count());
         // Large leaks bypass the cooldown, to allow deletion before server crashes
-        if (size >= CommonConfiguration.config.getCommonConfig().autoremovenodelaythreshold)
+        if (size >= CommonConfiguration.config.getCommonConfig().autoremovenodelaythreshold && !cluster.disabledAutoClean())
         {
             cluster.sendNotification(cluster.createDeletionNotification(), ClusterState.PENDING_DELETION);
             removeCluster(cluster.id());
@@ -112,7 +112,7 @@ public class ItemClusterManager
      * @param entity
      * @return
      */
-    private ItemCluster getExistingClusterOrNew(final ItemEntity entity, final DetectionSource detectionSource)
+    public ItemCluster getExistingClusterOrNew(final ItemEntity entity, final DetectionSource detectionSource)
     {
         ItemCluster cluster = getExistingCluster(entity, detectionSource);
         if (cluster == null)
@@ -195,14 +195,6 @@ public class ItemClusterManager
         {
             clusterList = new ArrayList<>();
             clusterSpatialStorage.put(index, clusterList);
-        }
-
-        for (final ItemCluster existingCluster : clusterList)
-        {
-            if (existingCluster.position.distManhattan(entity.blockPosition()) < 10)
-            {
-                Leaky.LOGGER.warn("Adding cluster twice!", new Exception());
-            }
         }
 
         clusterList.add(cluster);
