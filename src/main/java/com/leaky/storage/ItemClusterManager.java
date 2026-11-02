@@ -37,6 +37,11 @@ public class ItemClusterManager
     private List<ClusterHistory> historyList = new ArrayList<>();
 
     /**
+     * List of item clusters to remove on next tick
+     */
+    private List<ItemCluster> toRemove = new ArrayList<>();
+
+    /**
      * The cluster managers level
      */
     private final Level level;
@@ -66,8 +71,10 @@ public class ItemClusterManager
         // Large leaks bypass the cooldown, to allow deletion before server crashes
         if (size >= CommonConfiguration.config.getCommonConfig().autoremovenodelaythreshold && !cluster.disabledAutoClean())
         {
-            cluster.sendNotification(cluster.createDeletionNotification(), ClusterState.PENDING_DELETION);
-            removeCluster(cluster.id());
+            if (!toRemove.contains(cluster))
+            {
+                toRemove.add(cluster);
+            }
         }
     }
 
@@ -78,6 +85,17 @@ public class ItemClusterManager
      */
     public void onTick(final Level serverLevel)
     {
+        if (!toRemove.isEmpty())
+        {
+            for (final ItemCluster cluster: toRemove)
+            {
+                cluster.sendNotification(cluster.createDeletionNotification(), ClusterState.PENDING_DELETION);
+                removeCluster(cluster.id());
+            }
+
+            toRemove = new ArrayList<>();
+        }
+
         if (serverLevel.getServer().getTickCount() % (20 * 10) == 1)
         {
             clusterStorage.removeIf(cluster -> {
